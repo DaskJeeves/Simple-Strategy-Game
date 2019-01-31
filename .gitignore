@@ -1,0 +1,4 @@
+#	Add files you don't want to be tracked by git.
+
+# Private files - marked by prefixing the file with 'prv_', eg "prv_passwords.txt"
+prv_*
