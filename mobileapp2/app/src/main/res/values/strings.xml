@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">mobileapp2</string>
+    <string name="action_settings">Settings</string>
+    <string name="edit_message">Enter A Message</string>
+    <string name="button_send">Send</string>
+    <string name="help_message">This is where you display help text</string>
+</resources>
