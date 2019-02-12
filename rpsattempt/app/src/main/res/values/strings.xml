@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">rps-attempt</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="singleplayer">Single Player</string>
+    <string name="multiplayer">Multiplayer</string>
+    <string name="rock">Rock</string>
+    <string name="paper">Paper</string>
+    <string name="scissors">Scissors</string>
+</resources>
