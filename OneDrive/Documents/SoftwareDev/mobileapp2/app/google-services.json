@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "180944358351",
+    "firebase_url": "https://rps-game-c7687.firebaseio.com",
+    "project_id": "rps-game-c7687",
+    "storage_bucket": "rps-game-c7687.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180944358351:android:6bebfd03b1517334",
+        "android_client_info": {
+          "package_name": "com.example.mobileapp2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180944358351-irdk7egk0n96e5kbgjtl29t9gih86lm0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobileapp2",
+            "certificate_hash": "d9623d0e54709d1fa829c6d1b95400ef3b508cf0"
+          }
+        },
+        {
+          "client_id": "180944358351-v08v6g68d0n5gprqgv2u24ehjk9arta2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaMHxnYuewlgtfXc5I4eRnbYykSd8NlxY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180944358351-v08v6g68d0n5gprqgv2u24ehjk9arta2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
