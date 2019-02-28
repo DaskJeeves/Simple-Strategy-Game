@@ -5,7 +5,11 @@
     <string name="username">Username</string>
     <string name="singleplayer">Single Player</string>
     <string name="multiplayer">Multiplayer</string>
-    <string name="rock">Rock</string>
-    <string name="paper">Paper</string>
+    <string name="wins">WINS</string>
+    <string name="losses">LOSSES</string>
     <string name="scissors">Scissors</string>
+    <string name="ship_battle">Watercraft Warfare</string>
+    <string name="create_user">Create User</string>
+    <string name="email">Email</string>
+    <string name="active_games">ACTIVE GAMES</string>
 </resources>

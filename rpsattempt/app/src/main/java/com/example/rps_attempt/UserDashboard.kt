@@ -18,7 +18,7 @@ class UserDashboard : AppCompatActivity() {
 
         // Capture the layout's TextView and set the string as its text
         val textView = findViewById<TextView>(R.id.welcome_text).apply {
-            text = """Welcome $message"""
+            text = """    Welcome $message"""
         }
     }
 

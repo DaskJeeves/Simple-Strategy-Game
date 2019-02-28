@@ -9,8 +9,11 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".Gameplay"
-                  android:parentActivityName=".UserDashboard">
+        <activity android:name=".CreateUserActivity">
+        </activity>
+        <activity
+                android:name=".Gameplay"
+                android:parentActivityName=".UserDashboard">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
@@ -33,6 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts"/>
     </application>
 
 </manifest>

@@ -28,11 +28,7 @@ class Gameplay : AppCompatActivity() {
         toast.show()
     }
 
-    fun choose_scissors(view: View){
-        val text = "You Chose Scissors"
-        val duration = Toast.LENGTH_SHORT
-
-        val toast = Toast.makeText(applicationContext, text, duration)
-        toast.show()
+    fun finish_activity(view: View){
+        finish()
     }
 }
