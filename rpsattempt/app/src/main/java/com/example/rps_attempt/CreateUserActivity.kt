@@ -1,7 +1,6 @@
 package com.example.rps_attempt
 
 import android.content.Context
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,22 +10,18 @@ import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.auth.UserProfileChangeRequest
 
 
 class CreateUserActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
-
-    private val firestoreUser by lazy {
-        FirebaseFirestore.getInstance().collection("Users")
-    }
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
+
+        Log.e("START", "AUTH")
 
         FirebaseApp.initializeApp(this)
         auth = FirebaseAuth.getInstance()
@@ -37,9 +32,7 @@ class CreateUserActivity : AppCompatActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
          val currentUser = auth.currentUser
         Log.e("USER LOGGED IN", "MANAGE DATA HERE")
-        if (currentUser != null) {
-            Log.e("USER LOGGED IN", currentUser.email)
-        }
+        Log.e("USER LOGGED IN", currentUser.toString())
         //  updateUI(currentUser)
     }
 
@@ -47,80 +40,32 @@ class CreateUserActivity : AppCompatActivity() {
         val usernameInput = findViewById<EditText>(R.id.new_user_username).text.toString()
         val passwordInput = findViewById<EditText>(R.id.new_user_password).text.toString()
         val emailInput = findViewById<EditText>(R.id.new_user_email).text.toString()
-        Log.e("CREATE", "USER")
-        createAccount(emailInput, passwordInput, usernameInput)
+        createAccount(emailInput, passwordInput)
+        finish()
     }
 
-    private fun createAccount(email: String, password: String, username: String) {
-        Log.e("createAccount", ":$email")
+    private fun createAccount(email: String, password: String) {
+        Log.d("createAccount", ":$email")
 
         // [START create_user_with_email]
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                Log.e("TASK IS", task.toString())
                 if (task.isSuccessful) {
-                    Log.e("User created", ":success")
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("createUserWithEmail", ":success")
                     val user = auth.currentUser
+                    Log.e("USER IS", user.toString())
                     // updateUI(user)
-
-                    if (user != null) {
-
-                        // Add display name
-//                        val profileUpdates = UserProfileChangeRequest.Builder()
-//                            .setDisplayName(username)
-//                            //.setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
-//                            .build()
-//
-//                        user?.updateProfile(profileUpdates)
-//                            ?.addOnCompleteListener { task ->
-//                                if (task.isSuccessful) {
-//                                    Log.e("updated username to ", username)
-//                                } else {
-//                                    Log.e("failed update to ", username)
-//                                }
-//                            }
-
-                        // Send verification email
-//                        user?.sendEmailVerification()
-//                            ?.addOnCompleteListener { task ->
-//                                if (task.isSuccessful) {
-//                                    Log.e("Email verification.", "Sent")
-//                                } else {
-//                                    Log.e("failed verification to ", email)
-//                                }
-//                            }
-
-
-                        val uid = auth.currentUser!!.uid
-                        val newMessage = mapOf(
-                            "username" to username,
-                            "email" to email)
-                        firestoreUser.document(uid).set(newMessage)
-                            .addOnSuccessListener {
-                                Toast.makeText(this@CreateUserActivity, "User Created", Toast.LENGTH_SHORT).show()
-                            }
-                            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-
-
-                        auth.signInWithEmailAndPassword(email, username)
-
-
-                        val i = Intent()
-                        i.putExtra("user", username)
-                        setResult(RESULT_OK, i)
-                        finish()
-                    }
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("createUserWithEmail", ":failure", task.exception)
-                    Toast.makeText(
-                        baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
                     // updateUI(null)
                 }
-            }
 
+            }
+        // [END create_user_with_email]
     }
 
 
