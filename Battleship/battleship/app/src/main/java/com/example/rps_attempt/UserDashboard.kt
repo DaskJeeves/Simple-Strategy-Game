@@ -64,6 +64,7 @@ class UserDashboard : AppCompatActivity() {
                     if (document != null) {
                         val activeGameButton = Button(this)
                         activeGameButton.text = doc.id
+                        activeGameButton.tag = doc.id
                         activeGameButton.setBackgroundColor(
                             resources.getColor(R.color.colorPrimary)
                         )
@@ -72,6 +73,7 @@ class UserDashboard : AppCompatActivity() {
                         )
                         activeGameButton.setOnClickListener {
                             val intent = Intent(this, Gameplay::class.java)
+                            intent.putExtra("tag", it.tag.toString())
                             startActivity(intent)
                         }
                         active_games_ll.addView(activeGameButton, lp)
