@@ -10,6 +10,13 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.content.Context.INPUT_METHOD_SERVICE
+import android.support.v4.content.ContextCompat.getSystemService
+import android.app.Activity
+import android.content.Context
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -110,6 +117,32 @@ class MainActivity : AppCompatActivity() {
         if (user != null) {
             val intent = Intent(this, UserDashboard::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val v = currentFocus
+
+        if (v != null &&
+            (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val scrcoords = IntArray(2)
+            v.getLocationOnScreen(scrcoords)
+            val x = ev.rawX + v.left - scrcoords[0]
+            val y = ev.rawY + v.top - scrcoords[1]
+
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom)
+                hideKeyboard(this)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    fun hideKeyboard(activity: Activity?) {
+        if (activity != null && activity.window != null && activity.window.decorView != null) {
+            val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
         }
     }
 

@@ -4,8 +4,8 @@
     <string name="logout">Logout</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
-    <string name="singleplayer">Single Player</string>
-    <string name="multiplayer">Multiplayer</string>
+    <string name="singleplayer">New Single Player</string>
+    <string name="multiplayer">New Multiplayer</string>
     <string name="wins">WINS</string>
     <string name="losses">LOSSES</string>
     <string name="scissors">Scissors</string>
