@@ -117,7 +117,8 @@
                             android:id="@+id/active_games_linear_layout">
                         <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp" android:id="@+id/textView11"/>
+                                android:layout_height="35dp" android:id="@+id/textView11"
+                                android:text="@string/active_games"/>
                         <TextView
                                 android:text="@string/active_games"
                                 android:layout_width="match_parent"
