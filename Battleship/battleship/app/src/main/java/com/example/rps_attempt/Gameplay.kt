@@ -8,9 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_gameplay.*
 
 
@@ -28,6 +26,10 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     val moveColor = R.color.colorPrimary
     var userUid = ""
     var opponentUid = ""
+    lateinit var userShipsSnapshot: QuerySnapshot
+    lateinit var userMovesSnapshot: QuerySnapshot
+    lateinit var opponentShipsSnapshot: QuerySnapshot
+    lateinit var opponentMovesSnapshot: QuerySnapshot
 
     var currentBoardView = "user"
 
@@ -69,7 +71,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         }else{
                             document.getString("user2").toString()
                         }
-                        Log.e("OPPONENT", opponentUid)
+
+                        loadSnapshots()
                     }
                 }
         }
@@ -88,8 +91,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         }
 
 
-        realtimeUpdateListener()
-        loadUser()
+//        realtimeUpdateListener()
     }
 
     fun clearButtons(){
@@ -105,68 +107,87 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadOpponent() {
+        Log.e("LOAD","OPPONENT")
         loadOpponentShips()
         loadOpponentMoves()
+        Log.e("LOAD","OPPONENT2")
     }
 
-    fun loadUserShips() {
+    fun loadSnapshots() {
         val firestoreShips = firestoreGame.collection("Ships")
+        val firestoreMoves = firestoreGame.collection("Moves")
+
+        //USER MOVES
         val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
         userShips.get()
             .addOnSuccessListener { document ->
-                for(doc in document) {
-                    if (document != null) {
-                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                        val shipButton = findViewById<TextView>(id)
-                        shipButton.setBackgroundResource(shipColor)
-                    }
-                }
+                userShipsSnapshot = document
+                loadUserShips()
             }
-    }
 
-    fun loadUserMoves() {
-        val firestoreMoves = firestoreGame.collection("Moves")
+        //USER SHIPS
         val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
         userMoves.get()
             .addOnSuccessListener { document ->
-                for(doc in document) {
-                    if (document != null) {
-                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                        val moveButton = findViewById<TextView>(id)
-                        moveButton.setBackgroundResource(moveColor)
-                    }
-                }
+                userMovesSnapshot = document
+                loadUserMoves()
             }
+
+        //OPPONENT SHIPS
+        val opponentShips = firestoreShips.whereEqualTo("user", opponentUid)
+        opponentShips.get()
+            .addOnSuccessListener { document ->
+                opponentShipsSnapshot = document
+            }
+
+        //OPPONENT MOVES
+        val opponentMoves = firestoreMoves.whereEqualTo("user", opponentUid)
+        opponentMoves.get()
+            .addOnSuccessListener { document ->
+                opponentMovesSnapshot = document
+            }
+    }
+
+    fun loadUserShips() {
+        for(doc in userShipsSnapshot) {
+            if (userShipsSnapshot != null) {
+                val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                val shipButton = findViewById<TextView>(id)
+                shipButton.setBackgroundResource(shipColor)
+            }
+        }
+    }
+
+    fun loadUserMoves() {
+        for(doc in userMovesSnapshot) {
+            if (userMovesSnapshot != null) {
+                val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                val moveButton = findViewById<TextView>(id)
+                moveButton.setBackgroundResource(moveColor)
+            }
+        }
     }
 
     fun loadOpponentShips() {
-        val firestoreShips = firestoreGame.collection("Ships")
-        val userShips = firestoreShips.whereEqualTo("user", opponentUid)
-        userShips.get()
-            .addOnSuccessListener { document ->
-                for(doc in document) {
-                    if (document != null) {
-                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                        val shipButton = findViewById<TextView>(id)
-                        shipButton.setBackgroundResource(shipColor)
-                    }
-                }
+        Log.e("LOAD OPPONENT SHIPS", "")
+        for(doc in opponentShipsSnapshot) {
+            Log.e("OPPONENT SHIP", doc.data.toString())
+            if (opponentShipsSnapshot != null) {
+                val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                val shipButton = findViewById<TextView>(id)
+                shipButton.setBackgroundResource(shipColor)
             }
+        }
     }
 
     fun loadOpponentMoves() {
-        val firestoreMoves = firestoreGame.collection("Moves")
-        val userMoves = firestoreMoves.whereEqualTo("user", opponentUid)
-        userMoves.get()
-            .addOnSuccessListener { document ->
-                for(doc in document) {
-                    if (document != null) {
-                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                        val moveButton = findViewById<TextView>(id)
-                        moveButton.setBackgroundResource(moveColor)
-                    }
-                }
+        for(doc in opponentMovesSnapshot) {
+            if (opponentMovesSnapshot != null) {
+                val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                val moveButton = findViewById<TextView>(id)
+                moveButton.setBackgroundResource(moveColor)
             }
+        }
     }
 
 
@@ -203,34 +224,34 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     }
 
-
-    private fun realtimeUpdateListener() {
-
-        firestoreGame.addSnapshotListener { documentSnapshot, e ->
-
-            when {
-
-                e != null -> Log.e("ERROR", e.message)
-
-                documentSnapshot != null && documentSnapshot.exists() -> {
-
-                    with(documentSnapshot) {
-                        if (activePlayer == 0){
-                            var text = this!!.data?.get(MOVE_FIELD).toString() + " was selected"
-                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                            activePlayer = 1
-                        }
-
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
+//
+//    private fun realtimeUpdateListener() {
+//
+//        firestoreGame.addSnapshotListener { documentSnapshot, e ->
+//
+//            when {
+//
+//                e != null -> Log.e("ERROR", e.message)
+//
+//                documentSnapshot != null && documentSnapshot.exists() -> {
+//
+//                    with(documentSnapshot) {
+//                        if (activePlayer == 0){
+//                            var text = this!!.data?.get(MOVE_FIELD).toString() + " was selected"
+////                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
+//                            activePlayer = 1
+//                        }
+//
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//        }
+//
+//    }
 }
 
 
