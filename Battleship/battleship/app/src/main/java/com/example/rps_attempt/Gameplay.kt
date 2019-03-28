@@ -7,58 +7,198 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-
-
-
-
+import kotlinx.android.synthetic.main.activity_gameplay.*
 
 
 class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     var activePlayer = 1
 
-    val COLLECTION_KEY = "Game"
-
-    val DOCUMENT_KEY = "Room"
-
     var MOVE_FIELD = "Move"
 
-    val firestoreChat by lazy{
+    lateinit var auth: FirebaseAuth
 
-        FirebaseFirestore.getInstance().collection(COLLECTION_KEY).document(DOCUMENT_KEY)
+    lateinit var firestoreGame: DocumentReference
 
-    }
+    val shipColor = R.color.colorAccent
+    val moveColor = R.color.colorPrimary
+    var userUid = ""
+    var opponentUid = ""
+
+    var currentBoardView = "user"
+
+    val allButtons = listOf("a0", "a1", "a2", "a3", "a4", "a5",
+        "b0", "b1", "b2", "b3", "b4", "b5",
+        "c0", "c1", "c2", "c3", "c4", "c5",
+        "d0", "d1", "d2", "d3", "d4", "d5",
+        "e0", "e1", "e2", "e3", "e4", "e5",
+        "f0", "f1", "f2", "f3", "f4", "f5" )
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val root = setContentView(R.layout.activity_gameplay)
-        realtimeUpdateListener()
+
+
+        //Initialize Auth Instance
+        auth = FirebaseAuth.getInstance()
 
 
         val tag = intent.getStringExtra("tag")
-        findViewById<TextView>(R.id.game_tag).text = tag
+        if(tag!=null){
+            findViewById<TextView>(R.id.game_tag).text = tag
+            firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
+            Log.e("TAG", tag)
+
+
+            firestoreGame.get()
+                .addOnSuccessListener { document ->
+                    if(document != null){
+                        Log.e("DARA", document.data.toString())
+                        Log.e("USER", auth.currentUser!!.uid)
+                        Log.e("USER2", document.data!!["user2"].toString())
+                        Log.e("USER1", document.data!!["user1"].toString())
+                        opponentUid = if(document.getString("user2").toString() == auth.currentUser!!.uid){
+                            document.getString("user1").toString()
+                        }else{
+                            document.getString("user2").toString()
+                        }
+                        Log.e("OPPONENT", opponentUid)
+                    }
+                }
+        }
+
+        switchBoardView.setOnClickListener{
+            clearButtons()
+            if(currentBoardView == "user"){
+                currentBoardView = "opponent"
+                switchBoardView.text = "View My Board"
+                loadOpponent()
+            }else{
+                currentBoardView = "user"
+                switchBoardView.text = "View Opponents Board"
+                loadUser()
+            }
+        }
+
+
+        realtimeUpdateListener()
+        loadUser()
     }
 
+    fun clearButtons(){
+        for(btn in allButtons){
+            val button = findViewById<Button>(getResources().getIdentifier(btn, "id", packageName))
+            button.setBackgroundResource(android.R.drawable.btn_default)
+        }
+    }
+
+    fun loadUser() {
+        loadUserShips()
+        loadUserMoves()
+    }
+
+    fun loadOpponent() {
+        loadOpponentShips()
+        loadOpponentMoves()
+    }
+
+    fun loadUserShips() {
+        val firestoreShips = firestoreGame.collection("Ships")
+        val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+        userShips.get()
+            .addOnSuccessListener { document ->
+                for(doc in document) {
+                    if (document != null) {
+                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                        val shipButton = findViewById<TextView>(id)
+                        shipButton.setBackgroundResource(shipColor)
+                    }
+                }
+            }
+    }
+
+    fun loadUserMoves() {
+        val firestoreMoves = firestoreGame.collection("Moves")
+        val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
+        userMoves.get()
+            .addOnSuccessListener { document ->
+                for(doc in document) {
+                    if (document != null) {
+                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                        val moveButton = findViewById<TextView>(id)
+                        moveButton.setBackgroundResource(moveColor)
+                    }
+                }
+            }
+    }
+
+    fun loadOpponentShips() {
+        val firestoreShips = firestoreGame.collection("Ships")
+        val userShips = firestoreShips.whereEqualTo("user", opponentUid)
+        userShips.get()
+            .addOnSuccessListener { document ->
+                for(doc in document) {
+                    if (document != null) {
+                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                        val shipButton = findViewById<TextView>(id)
+                        shipButton.setBackgroundResource(shipColor)
+                    }
+                }
+            }
+    }
+
+    fun loadOpponentMoves() {
+        val firestoreMoves = firestoreGame.collection("Moves")
+        val userMoves = firestoreMoves.whereEqualTo("user", opponentUid)
+        userMoves.get()
+            .addOnSuccessListener { document ->
+                for(doc in document) {
+                    if (document != null) {
+                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                        val moveButton = findViewById<TextView>(id)
+                        moveButton.setBackgroundResource(moveColor)
+                    }
+                }
+            }
+    }
 
 
     override fun onClick(v: View) {
 
-        Log.e("a","error occured")
-
         val newMessage = mapOf(
-
-            MOVE_FIELD to v.getTag().toString())
-
-        firestoreChat.set(newMessage)
-
-            .addOnSuccessListener {
-
-                //Toast.makeText(this@Gameplay, "Message Sent", Toast.LENGTH_SHORT).show()
-                activePlayer = 0
+            "position" to v.getTag().toString(),
+            "user" to auth.currentUser!!.uid,
+            "created" to FieldValue.serverTimestamp()
+        )
+        val firestoreMoves = firestoreGame.collection("Moves")
+        val firestoreShips = firestoreGame.collection("Ships")
+        val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+        userShips.get()
+            .addOnSuccessListener { document ->
+                Log.e("SIZE:", document.size().toString())
+                if (document.size() < 6) {
+                    firestoreShips.document().set(newMessage)
+                        .addOnSuccessListener {
+                            activePlayer = 0
+                            v.setBackgroundResource(shipColor)
+                        }
+                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                }else{
+                    firestoreMoves.document().set(newMessage)
+                        .addOnSuccessListener {
+                            activePlayer = 0
+                            v.setBackgroundResource(moveColor)
+                        }
+                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                }
             }
-
             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
 
     }
@@ -66,7 +206,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     private fun realtimeUpdateListener() {
 
-        firestoreChat.addSnapshotListener { documentSnapshot, e ->
+        firestoreGame.addSnapshotListener { documentSnapshot, e ->
 
             when {
 

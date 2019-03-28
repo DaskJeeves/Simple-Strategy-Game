@@ -10,8 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.support.v4.content.ContextCompat.getSystemService
 import android.app.Activity
 import android.content.Context
 import android.view.MotionEvent
@@ -70,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.e("USER IS", auth.currentUser.toString())
-                    Log.e("EMAIL IS", auth.currentUser!!.email)
                     val user = auth.currentUser
                     if (user != null) {
                         if(user.displayName.toString() != ""){
@@ -119,6 +115,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
+
+    //Hides the keyboard when the user clicks anywhere that isn't the keyboard.
+    //Copy and paste both to any page you want this functionality
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val v = currentFocus

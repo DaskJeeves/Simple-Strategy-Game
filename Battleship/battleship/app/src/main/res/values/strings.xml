@@ -13,4 +13,5 @@
     <string name="create_user">Create User</string>
     <string name="email">Email</string>
     <string name="active_games">ACTIVE GAMES</string>
+    <string name="view_board">View Opponents Board</string>
 </resources>
