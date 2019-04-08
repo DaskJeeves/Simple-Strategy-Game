@@ -104,13 +104,13 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadUser() {
         loadUserShips()
-        loadUserMoves()
+        loadOpponentMoves()
     }
 
     fun loadOpponent() {
         Log.e("LOAD","OPPONENT")
         loadOpponentShips()
-        loadOpponentMoves()
+        loadUserMoves()
         Log.e("LOAD","OPPONENT2")
     }
 
@@ -118,7 +118,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         val firestoreShips = firestoreGame.collection("Ships")
         val firestoreMoves = firestoreGame.collection("Moves")
 
-        //USER MOVES
+        //USER SHIPS
         val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
         userShips.get()
             .addOnSuccessListener { document ->
@@ -126,12 +126,11 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 loadUserShips()
             }
 
-        //USER SHIPS
+        //USER MOVES
         val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
         userMoves.get()
             .addOnSuccessListener { document ->
                 userMovesSnapshot = document
-                loadUserMoves()
             }
 
         //OPPONENT SHIPS
@@ -146,6 +145,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         opponentMoves.get()
             .addOnSuccessListener { document ->
                 opponentMovesSnapshot = document
+                loadOpponentMoves()
             }
     }
 
@@ -194,65 +194,65 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
 
-        val newMessage = mapOf(
-            "position" to v.getTag().toString(),
-            "user" to auth.currentUser!!.uid,
-            "created" to FieldValue.serverTimestamp()
-        )
-        val firestoreMoves = firestoreGame.collection("Moves")
-        val firestoreShips = firestoreGame.collection("Ships")
-        val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
-        userShips.get()
-            .addOnSuccessListener { document ->
-                Log.e("SIZE:", document.size().toString())
-                if (document.size() < 6) {
-                    firestoreShips.document().set(newMessage)
-                        .addOnSuccessListener {
-                            activePlayer = 0
-                            v.setBackgroundResource(shipColor)
-                        }
-                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-                }else{
-                    firestoreMoves.document().set(newMessage)
-                        .addOnSuccessListener {
-                            activePlayer = 0
-                            v.setBackgroundResource(moveColor)
-                        }
-                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+        if (activePlayer == 1) {
+            val newMessage = mapOf(
+                "position" to v.getTag().toString(),
+                "user" to auth.currentUser!!.uid,
+                "created" to FieldValue.serverTimestamp()
+            )
+            val firestoreMoves = firestoreGame.collection("Moves")
+            val firestoreShips = firestoreGame.collection("Ships")
+            val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+            userShips.get()
+                .addOnSuccessListener { document ->
+                    Log.e("SIZE:", document.size().toString())
+                    if (document.size() < 6) {
+                        firestoreShips.document().set(newMessage)
+                            .addOnSuccessListener {
+                                v.setBackgroundResource(shipColor)
+                            }
+                            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                    } else {
+                        firestoreMoves.document().set(newMessage)
+                            .addOnSuccessListener {
+                                activePlayer = 0
+                                v.setBackgroundResource(moveColor)
+                            }
+                            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                    }
                 }
-            }
-            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-
+                .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+        }
     }
 
-//
-//    private fun realtimeUpdateListener() {
-//
-//        firestoreGame.addSnapshotListener { documentSnapshot, e ->
-//
-//            when {
-//
-//                e != null -> Log.e("ERROR", e.message)
-//
-//                documentSnapshot != null && documentSnapshot.exists() -> {
-//
-//                    with(documentSnapshot) {
-//                        if (activePlayer == 0){
-//                            var text = this!!.data?.get(MOVE_FIELD).toString() + " was selected"
-////                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
-//                            activePlayer = 1
-//                        }
-//
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//        }
-//
-//    }
+/**
+    private fun realtimeUpdateListener() {
+
+        firestoreGame.addSnapshotListener { documentSnapshot, e ->
+
+            when {
+
+                e != null -> Log.e("ERROR", e.message)
+
+                documentSnapshot != null && documentSnapshot.exists() -> {
+
+                    with(documentSnapshot) {
+                        if (activePlayer == 0){
+                            var text = this!!.data?.get(MOVE_FIELD).toString() + " was selected"
+                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
+                            activePlayer = 1
+                        }
+
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    } */
 }
 
 
