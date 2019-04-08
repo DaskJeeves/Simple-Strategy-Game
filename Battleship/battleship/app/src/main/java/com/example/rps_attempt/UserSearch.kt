@@ -65,34 +65,34 @@ class UserSearch : AppCompatActivity() {
                         count += 1
                     }
                 }
+                emailRef.get()
+                    .addOnSuccessListener { document ->
+                        for (doc in document) {
+                            if (document != null) {
+                                val activeUserButton = Button(this)
+                                activeUserButton.text = doc.data["username"].toString()
+                                activeUserButton.tag = doc.id
+                                activeUserButton.setBackgroundColor(
+                                    resources.getColor(R.color.colorPrimary)
+                                )
+                                activeUserButton.setTextColor(
+                                    resources.getColor(R.color.white)
+                                )
+                                activeUserButton.setOnClickListener {
+                                    createNewGame(it.tag.toString())
+                                }
+                                searched_users_ll.addView(activeUserButton, lp)
+                                count += 1
+                            }
+                        }
+                        if(count == 0){
+                            val noUserText = TextView(this)
+                            noUserText.text = "No users found"
+                            searched_users_ll.addView(noUserText, lp)
+                        }
+                    }
             }
 
-        emailRef.get()
-            .addOnSuccessListener { document ->
-                for (doc in document) {
-                    if (document != null) {
-                        val activeUserButton = Button(this)
-                        activeUserButton.text = doc.data["username"].toString()
-                        activeUserButton.tag = doc.id
-                        activeUserButton.setBackgroundColor(
-                            resources.getColor(R.color.colorPrimary)
-                        )
-                        activeUserButton.setTextColor(
-                            resources.getColor(R.color.white)
-                        )
-                        activeUserButton.setOnClickListener {
-                            createNewGame(it.tag.toString())
-                        }
-                        searched_users_ll.addView(activeUserButton, lp)
-                        count += 1
-                    }
-                }
-                if(count == 0){
-                    val noUserText = TextView(this)
-                    noUserText.text = "No users found"
-                    searched_users_ll.addView(noUserText, lp)
-                }
-            }
 
     }
 
