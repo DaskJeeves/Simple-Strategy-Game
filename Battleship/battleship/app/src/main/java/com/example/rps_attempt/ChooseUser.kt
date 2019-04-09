@@ -71,6 +71,8 @@ class ChooseUser : AppCompatActivity() {
         val newMessage = mapOf(
             "user1" to uid,
             "user2" to opponent_uid,
+            "user1ShipsSet" to false,
+            "user2ShipsSet" to false,
             "activeUser" to uid,
             "status" to "active",
             "created" to FieldValue.serverTimestamp()
