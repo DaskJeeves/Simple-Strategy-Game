@@ -43,6 +43,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         "e0", "e1", "e2", "e3", "e4", "e5",
         "f0", "f1", "f2", "f3", "f4", "f5" )
 
+    // Test comment for pushing with gitkraken
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
