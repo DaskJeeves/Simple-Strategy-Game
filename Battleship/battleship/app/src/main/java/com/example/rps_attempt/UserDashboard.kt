@@ -164,22 +164,22 @@ class UserDashboard : AppCompatActivity() {
                         active_games_ll.addView(activeGameButton, lp)
                     }
                 }
+
+                //Add logout button to end
+                val lp2 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                lp2.setMargins(10, 100, 10, 0)
+                val logoutText = TextView(this)
+                logoutText.text = "LOGOUT"
+                logoutText.gravity = Gravity.CENTER
+                logoutText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18.0F)
+                logoutText.setOnClickListener {
+                    auth = FirebaseAuth.getInstance()
+                    auth.signOut()
+                    finish()
+                }
+                active_games_ll.addView(logoutText, lp2)
             }
 
-
-        //Add logout button to end
-        val lp2 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        lp2.setMargins(10, 100, 10, 0)
-        val logoutText = TextView(this)
-        logoutText.text = "LOGOUT"
-        logoutText.gravity = Gravity.CENTER
-        logoutText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18.0F)
-        logoutText.setOnClickListener {
-            auth = FirebaseAuth.getInstance()
-            auth.signOut()
-            finish()
-        }
-        active_games_ll.addView(logoutText, lp2)
     }
 
     private fun realtimeUpdateListener() {
