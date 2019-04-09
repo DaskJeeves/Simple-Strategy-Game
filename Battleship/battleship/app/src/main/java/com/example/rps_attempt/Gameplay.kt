@@ -26,6 +26,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     val moveColor = R.color.colorPrimary
     var userUid = ""
     var opponentUid = ""
+    var user1 = ""
+    var activeUser = ""
+    var userShipsSet = false
     lateinit var userShipsSnapshot: QuerySnapshot
     lateinit var userMovesSnapshot: QuerySnapshot
     lateinit var opponentShipsSnapshot: QuerySnapshot
@@ -67,6 +70,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         Log.e("USER", auth.currentUser!!.uid)
                         Log.e("USER2", document.data!!["user2"].toString())
                         Log.e("USER1", document.data!!["user1"].toString())
+                        userUid = auth.currentUser!!.uid
+                        user1 = document.getString("user1").toString()
+                        activeUser = document.getString("activeUser").toString()
                         opponentUid = if(document.getString("user2").toString() == auth.currentUser!!.uid){
                             document.getString("user1").toString()
                         }else{
@@ -74,6 +80,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         }
 
                         loadSnapshots()
+                        realtimeUpdateListener()
                     }
                 }
         }
@@ -194,65 +201,96 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
 
-        if (activePlayer == 1) {
+        when (currentBoardView) {
+            "user" ->
+
+            if (!userShipsSet) {
+                val newMessage = mapOf(
+                    "position" to v.getTag().toString(),
+                    "user" to auth.currentUser!!.uid,
+                    "hit" to false,
+                    "created" to FieldValue.serverTimestamp()
+                )
+                val firestoreShips = firestoreGame.collection("Ships")
+                val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+                userShips.get()
+                    .addOnSuccessListener { document ->
+                        Log.e("SIZE:", document.size().toString())
+                        when (document.size()) {
+                            in 0..4 ->
+                                firestoreShips.document().set(newMessage)
+                                .addOnSuccessListener {
+                                    v.setBackgroundResource(shipColor)
+                                }
+                            5 ->
+                                firestoreShips.document().set(newMessage)
+                                .addOnSuccessListener {
+                                    v.setBackgroundResource(shipColor)
+                                    userShipsSet = true
+                                    var setUserShips : Map<String, Any>
+                                    if(user1 == userUid) {
+                                         setUserShips = mapOf(
+                                            "user1ShipsSet" to true
+                                        )
+                                    }
+                                    else {
+                                         setUserShips = mapOf(
+                                            "user2ShipsSet" to true
+                                            )
+                                        }
+                                    firestoreGame.set(setUserShips, SetOptions.merge())
+                                }
+                            else ->
+                            userShipsSet = true
+                        }
+                    }
+
+                }
+
+        else ->
+        if (activeUser == userUid && userShipsSet) {
             val newMessage = mapOf(
                 "position" to v.getTag().toString(),
                 "user" to auth.currentUser!!.uid,
                 "created" to FieldValue.serverTimestamp()
             )
             val firestoreMoves = firestoreGame.collection("Moves")
-            val firestoreShips = firestoreGame.collection("Ships")
-            val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
-            userShips.get()
-                .addOnSuccessListener { document ->
-                    Log.e("SIZE:", document.size().toString())
-                    if (document.size() < 6) {
-                        firestoreShips.document().set(newMessage)
-                            .addOnSuccessListener {
-                                v.setBackgroundResource(shipColor)
-                            }
-                            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-                    } else {
-                        firestoreMoves.document().set(newMessage)
-                            .addOnSuccessListener {
-                                activePlayer = 0
-                                v.setBackgroundResource(moveColor)
-                            }
-                            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                firestoreMoves.document().set(newMessage)
+                    .addOnSuccessListener {
+                        activeUser = opponentUid
+                        val setActiveUser = mapOf (
+                            "activeUser" to opponentUid
+                        )
+                        firestoreGame.set(setActiveUser, SetOptions.merge())
+                        activePlayer = 0
+                        v.setBackgroundResource(moveColor)
                     }
-                }
-                .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+            }
         }
     }
 
-/**
+
+
+
     private fun realtimeUpdateListener() {
 
-        firestoreGame.addSnapshotListener { documentSnapshot, e ->
+        firestoreGame.addSnapshotListener { document, e ->
 
-            when {
+            if(e != null) {
+                Log.e("ERROR", e.message)
+            }
 
-                e != null -> Log.e("ERROR", e.message)
+            if(document != null && document.exists()) {
 
-                documentSnapshot != null && documentSnapshot.exists() -> {
+                activeUser = (document.getString("activeUser").toString())
 
-                    with(documentSnapshot) {
-                        if (activePlayer == 0){
-                            var text = this!!.data?.get(MOVE_FIELD).toString() + " was selected"
-                            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
-                            activePlayer = 1
-                        }
-
-
-                    }
-
-                }
 
             }
 
         }
 
-    } */
+    }
 }
 
 
