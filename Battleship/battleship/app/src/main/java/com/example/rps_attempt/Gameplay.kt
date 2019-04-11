@@ -80,26 +80,25 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         }
 
                         loadSnapshots()
+                        loadUserSnapshots()
                         realtimeUpdateListener()
                     }
                 }
         }
 
         switchBoardView.setOnClickListener{
-            clearButtons()
             if(currentBoardView == "user"){
                 currentBoardView = "opponent"
                 switchBoardView.text = "View My Board"
-                loadOpponent()
+                loadOpponentSnapshots()
             }else{
                 currentBoardView = "user"
                 switchBoardView.text = "View Opponents Board"
-                loadUser()
+                loadUserSnapshots()
             }
         }
 
-
-//        realtimeUpdateListener()
+//      realtimeUpdateListener()
     }
 
     fun clearButtons(){
@@ -110,15 +109,54 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadUser() {
+        clearButtons()
         loadUserShips()
         loadOpponentMoves()
     }
 
     fun loadOpponent() {
-        Log.e("LOAD","OPPONENT")
+        clearButtons()
         loadOpponentShips()
         loadUserMoves()
-        Log.e("LOAD","OPPONENT2")
+    }
+
+    fun loadUserSnapshots(){
+        val firestoreShips = firestoreGame.collection("Ships")
+        val firestoreMoves = firestoreGame.collection("Moves")
+
+        //USER SHIPS
+        val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+        userShips.get()
+            .addOnSuccessListener { document ->
+                userShipsSnapshot = document
+                //OPPONENT MOVES
+                val opponentMoves = firestoreMoves.whereEqualTo("user", opponentUid)
+                opponentMoves.get()
+                    .addOnSuccessListener { document ->
+                        opponentMovesSnapshot = document
+                        loadUser()
+                    }
+            }
+    }
+
+    fun loadOpponentSnapshots(){
+        val firestoreShips = firestoreGame.collection("Ships")
+        val firestoreMoves = firestoreGame.collection("Moves")
+
+
+        //OPPONENT SHIPS
+        val opponentShips = firestoreShips.whereEqualTo("user", opponentUid)
+        opponentShips.get()
+            .addOnSuccessListener { document ->
+                opponentShipsSnapshot = document
+                //USER MOVES
+                val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
+                userMoves.get()
+                    .addOnSuccessListener { document ->
+                        userMovesSnapshot = document
+                        loadOpponent()
+                    }
+            }
     }
 
     fun loadSnapshots() {
@@ -130,7 +168,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         userShips.get()
             .addOnSuccessListener { document ->
                 userShipsSnapshot = document
-                loadUserShips()
             }
 
         //USER MOVES
@@ -152,11 +189,13 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         opponentMoves.get()
             .addOnSuccessListener { document ->
                 opponentMovesSnapshot = document
-                loadOpponentMoves()
             }
     }
 
     fun loadUserShips() {
+        if(userShipsSnapshot.size() > 5){
+            userShipsSet = true
+        }
         for(doc in userShipsSnapshot) {
             if (userShipsSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
@@ -200,6 +239,10 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
 
     override fun onClick(v: View) {
+
+        Log.e("USERSHIPSSET", userShipsSet.toString())
+        Log.e("ACTIVEUSER", activeUser)
+        Log.e("USERID", userUid)
 
         when (currentBoardView) {
             "user" ->
@@ -282,14 +325,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
 
             if(document != null && document.exists()) {
-
                 activeUser = (document.getString("activeUser").toString())
-
-
             }
-
         }
-
     }
 }
 

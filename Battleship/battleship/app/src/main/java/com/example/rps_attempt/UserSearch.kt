@@ -73,7 +73,7 @@ class UserSearch : AppCompatActivity() {
                                 activeUserButton.text = doc.data["username"].toString()
                                 activeUserButton.tag = doc.id
                                 activeUserButton.setBackgroundColor(
-                                    resources.getColor(R.color.colorPrimary)
+                                    resources.getColor(R.color.colorAccent)
                                 )
                                 activeUserButton.setTextColor(
                                     resources.getColor(R.color.white)
@@ -104,7 +104,10 @@ class UserSearch : AppCompatActivity() {
             "user1" to uid,
             "user2" to opponent_uid,
             "status" to "active",
-            "created" to FieldValue.serverTimestamp()
+            "created" to FieldValue.serverTimestamp(),
+            "user1ShipsSet" to false,
+            "user2ShipsSet" to false,
+            "activeUser" to uid
         )
 
         val newGame = firestoreGame.document()

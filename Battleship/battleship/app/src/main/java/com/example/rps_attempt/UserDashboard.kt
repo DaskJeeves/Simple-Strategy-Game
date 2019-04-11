@@ -8,10 +8,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -54,6 +51,10 @@ class UserDashboard : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "get failed with ", exception)
             }
+
+        findViewById<ImageButton>(R.id.sync_active_games).setOnClickListener{
+            loadActiveGames()
+        }
     }
 
     /** Called when going to a gameplay page */
@@ -196,6 +197,14 @@ class UserDashboard : AppCompatActivity() {
                     }
                 }
             }
+//            firestoreGame.whereEqualTo("user2", user.uid).addSnapshotListener { documentSnapshot, e ->
+//                when {
+//                    e != null -> Log.e("ERROR", e.message)
+//                    documentSnapshot != null -> {
+//                        loadActiveGames()
+//                    }
+//                }
+//            }
         }
     }
 

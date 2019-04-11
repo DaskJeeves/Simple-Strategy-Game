@@ -127,6 +127,16 @@
                                 android:fontFamily="@font/new_rocker"
                                 android:gravity="center"/>
                     </LinearLayout>
+                    <ImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" app:srcCompat="@android:drawable/stat_notify_sync"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
+                            android:id="@+id/sync_active_games" android:layout_marginTop="20dp"
+                            android:background="@null"
+                            app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+                            app:layout_constraintHorizontal_bias="0.934"/>
                 </android.support.constraint.ConstraintLayout>
             </LinearLayout>
         </ScrollView>
