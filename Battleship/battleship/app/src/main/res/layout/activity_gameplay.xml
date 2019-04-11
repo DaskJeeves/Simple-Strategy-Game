@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/battleship_background_other_pages"
+        android:background="@drawable/battleship_background_other_pages_solid"
         tools:context=".Gameplay">
     <Button
             android:text="@string/view_board"
