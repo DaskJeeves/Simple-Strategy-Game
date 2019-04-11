@@ -50,7 +50,7 @@ class ChooseUser : AppCompatActivity() {
                         activeUserButton.text = doc.data["username"].toString()
                         activeUserButton.tag = doc.id
                         activeUserButton.setBackgroundColor(
-                            resources.getColor(R.color.colorPrimary)
+                            resources.getColor(R.color.colorAccent)
                         )
                         activeUserButton.setTextColor(
                             resources.getColor(R.color.white)

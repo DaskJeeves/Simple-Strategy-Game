@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
+// test
 
 class UserDashboard : AppCompatActivity() {
 
@@ -121,7 +122,7 @@ class UserDashboard : AppCompatActivity() {
                         activeGameButton.text = doc.id
                         activeGameButton.tag = doc.id
                         activeGameButton.setBackgroundColor(
-                            resources.getColor(R.color.colorPrimary)
+                            resources.getColor(R.color.colorAccent)
                         )
                         activeGameButton.setTextColor(
                             resources.getColor(R.color.white)
@@ -151,7 +152,7 @@ class UserDashboard : AppCompatActivity() {
                         activeGameButton.text = doc.id
                         activeGameButton.tag = doc.id
                         activeGameButton.setBackgroundColor(
-                            resources.getColor(R.color.colorPrimary)
+                            resources.getColor(R.color.colorAccent)
                         )
                         activeGameButton.setTextColor(
                             resources.getColor(R.color.white)
