@@ -23,12 +23,16 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     lateinit var firestoreGame: DocumentReference
 
     val shipColor = R.color.colorAccent
+    val hitColor = R.color.hit_color
     val moveColor = R.color.colorPrimary
     var userUid = ""
     var opponentUid = ""
     var user1 = ""
     var activeUser = ""
     var userShipsSet = false
+    var userMoves = ArrayList<String>()
+    var userShips = ArrayList<String>()
+    var opponentShips = ArrayList<String>()
     lateinit var userShipsSnapshot: QuerySnapshot
     lateinit var userMovesSnapshot: QuerySnapshot
     lateinit var opponentShipsSnapshot: QuerySnapshot
@@ -116,8 +120,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadOpponent() {
         clearButtons()
-        loadOpponentShips()
         loadUserMoves()
+        loadOpponentShips()
     }
 
     fun loadUserSnapshots(){
@@ -193,6 +197,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadUserShips() {
+        userShips = ArrayList<String>()
         if(userShipsSnapshot.size() > 5){
             userShipsSet = true
         }
@@ -201,28 +206,36 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
                 shipButton.setBackgroundResource(shipColor)
+                userShips.add(doc.data!!["position"].toString().toLowerCase())
             }
         }
     }
 
     fun loadUserMoves() {
+        userMoves = ArrayList<String>()
         for(doc in userMovesSnapshot) {
             if (userMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
                 moveButton.setBackgroundResource(moveColor)
+                userMoves.add(doc.data!!["position"].toString().toLowerCase())
             }
         }
     }
 
     fun loadOpponentShips() {
-        Log.e("LOAD OPPONENT SHIPS", "")
+        opponentShips = ArrayList<String>()
+        Log.e("USER MOVES", userMoves.toString())
         for(doc in opponentShipsSnapshot) {
             Log.e("OPPONENT SHIP", doc.data.toString())
             if (opponentShipsSnapshot != null) {
+                opponentShips.add(doc.data!!["position"].toString().toLowerCase())
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
-                shipButton.setBackgroundResource(shipColor)
+                Log.e("POSITION", doc.data!!["position"].toString().toLowerCase())
+                if(userMoves.contains(doc.data!!["position"].toString().toLowerCase())){
+                    shipButton.setBackgroundResource(hitColor)
+                }
             }
         }
     }
@@ -232,7 +245,11 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             if (opponentMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
-                moveButton.setBackgroundResource(moveColor)
+                if(userShips.contains(doc.data!!["position"].toString().toLowerCase())){
+                    moveButton.setBackgroundResource(hitColor)
+                }else{
+                    moveButton.setBackgroundResource(moveColor)
+                }
             }
         }
     }
@@ -306,14 +323,16 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         )
                         firestoreGame.set(setActiveUser, SetOptions.merge())
                         activePlayer = 0
-                        v.setBackgroundResource(moveColor)
+                        if(opponentShips.contains(v.getTag().toString())){
+                            v.setBackgroundResource(hitColor)
+                        }else{
+                            v.setBackgroundResource(moveColor)
+                        }
                     }
                         .addOnFailureListener { e -> Log.e("ERROR", e.message) }
             }
         }
     }
-
-
 
 
     private fun realtimeUpdateListener() {
