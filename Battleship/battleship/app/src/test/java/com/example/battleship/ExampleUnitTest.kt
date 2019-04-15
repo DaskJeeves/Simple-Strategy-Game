@@ -1,4 +1,4 @@
-package com.example.rps_attempt
+package com.example.battleship
 
 import org.junit.Test
 

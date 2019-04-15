@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.rps_attempt">
+          package="com.example.battleship">
 
     <application
             android:allowBackup="true"
@@ -9,33 +9,33 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".UserSearch">
+        <activity android:name="com.example.battleship.UserSearch">
         </activity>
-        <activity android:name=".ChooseUser">
+        <activity android:name="com.example.battleship.ChooseUser">
         </activity>
         <activity android:name=".TestChatActivity">
         </activity>
-        <activity android:name=".CreateUserActivity">
+        <activity android:name="com.example.battleship.CreateUserActivity">
         </activity>
         <activity
-                android:name=".Gameplay"
-                android:parentActivityName=".UserDashboard">
+                android:name="com.example.battleship.Gameplay"
+                android:parentActivityName="com.example.battleship.UserDashboard">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".UserDashboard"/>
+                    android:value="com.example.battleship.UserDashboard"/>
         </activity>
         <activity
-                android:name=".UserDashboard"
-                android:parentActivityName=".MainActivity">
+                android:name="com.example.battleship.UserDashboard"
+                android:parentActivityName="com.example.battleship.MainActivity">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".MainActivity"/>
+                    android:value="com.example.battleship.MainActivity"/>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.battleship.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

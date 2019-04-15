@@ -1,4 +1,4 @@
-package com.example.rps_attempt
+package com.example.battleship
 
 import android.annotation.SuppressLint
 import android.content.Intent

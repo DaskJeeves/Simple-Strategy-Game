@@ -1,4 +1,4 @@
-package com.example.rps_attempt
+package com.example.battleship
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -7,11 +7,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_user_search.*
 
-class ChooseUser : AppCompatActivity() {
+class UserSearch : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private val firestoreUser by lazy {
@@ -23,26 +25,27 @@ class ChooseUser : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_choose_user)
+        setContentView(R.layout.activity_user_search)
 
         auth = FirebaseAuth.getInstance()
-
-        loadActiveUsers()
     }
 
-    fun loadActiveUsers(){
+    fun searchUsers(view: View){
+        var count = 0
+        val userOrEmail = name_input.text.toString()
 
-        val active_users_ll = findViewById<LinearLayout>(R.id.active_users_ll)
+        val docRef = firestoreUser.whereEqualTo("username", userOrEmail)
+        val emailRef = firestoreUser.whereEqualTo("email", userOrEmail)
 
-        if ((active_users_ll).childCount > 0){
-            (active_users_ll).removeAllViews()
+        if ((searched_users_ll).childCount > 0){
+            (searched_users_ll).removeAllViews()
         }
 
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         lp.setMargins(10, 10, 10, 0)
 
 
-        firestoreUser.get()
+        docRef.get()
             .addOnSuccessListener { document ->
                 for (doc in document) {
                     if (document != null) {
@@ -58,10 +61,39 @@ class ChooseUser : AppCompatActivity() {
                         activeUserButton.setOnClickListener {
                             createNewGame(it.tag.toString())
                         }
-                        active_users_ll.addView(activeUserButton, lp)
+                        searched_users_ll.addView(activeUserButton, lp)
+                        count += 1
                     }
                 }
+                emailRef.get()
+                    .addOnSuccessListener { document ->
+                        for (doc in document) {
+                            if (document != null) {
+                                val activeUserButton = Button(this)
+                                activeUserButton.text = doc.data["username"].toString()
+                                activeUserButton.tag = doc.id
+                                activeUserButton.setBackgroundColor(
+                                    resources.getColor(R.color.colorAccent)
+                                )
+                                activeUserButton.setTextColor(
+                                    resources.getColor(R.color.white)
+                                )
+                                activeUserButton.setOnClickListener {
+                                    createNewGame(it.tag.toString())
+                                }
+                                searched_users_ll.addView(activeUserButton, lp)
+                                count += 1
+                            }
+                        }
+                        if(count == 0){
+                            val noUserText = TextView(this)
+                            noUserText.text = "No users found"
+                            searched_users_ll.addView(noUserText, lp)
+                        }
+                    }
             }
+
+
     }
 
 
@@ -71,11 +103,11 @@ class ChooseUser : AppCompatActivity() {
         val newMessage = mapOf(
             "user1" to uid,
             "user2" to opponent_uid,
+            "status" to "active",
+            "created" to FieldValue.serverTimestamp(),
             "user1ShipsSet" to false,
             "user2ShipsSet" to false,
-            "activeUser" to uid,
-            "status" to "active",
-            "created" to FieldValue.serverTimestamp()
+            "activeUser" to uid
         )
 
         val newGame = firestoreGame.document()
@@ -88,12 +120,6 @@ class ChooseUser : AppCompatActivity() {
 
         val intent = Intent(this, Gameplay::class.java)
         intent.putExtra("tag", newGame.id)
-        startActivity(intent)
-        finish()
-    }
-
-    fun goToUserSearch(view: View){
-        val intent = Intent(this, UserSearch::class.java)
         startActivity(intent)
         finish()
     }

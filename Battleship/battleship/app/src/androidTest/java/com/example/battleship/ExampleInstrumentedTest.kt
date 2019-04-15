@@ -1,4 +1,4 @@
-package com.example.rps_attempt
+package com.example.battleship
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
