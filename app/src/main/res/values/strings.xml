@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">rps-attempt</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="singleplayer">New Single Player</string>
+    <string name="multiplayer">New Multiplayer</string>
+    <string name="wins">WINS</string>
+    <string name="losses">LOSSES</string>
+    <string name="scissors">Scissors</string>
+    <string name="ship_battle">Watercraft Warfare</string>
+    <string name="create_user">Create User</string>
+    <string name="email">Email</string>
+    <string name="active_games">ACTIVE GAMES</string>
+    <string name="view_board">View Opponents Board</string>
+</resources>
