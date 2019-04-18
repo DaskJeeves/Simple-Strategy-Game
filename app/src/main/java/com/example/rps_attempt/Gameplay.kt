@@ -313,6 +313,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 "position" to v.getTag().toString(),
                 "user" to auth.currentUser!!.uid,
                 "created" to FieldValue.serverTimestamp()
+
             )
             val firestoreMoves = firestoreGame.collection("Moves")
                 firestoreMoves.document().set(newMessage)
@@ -325,6 +326,21 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         activePlayer = 0
                         if(opponentShips.contains(v.getTag().toString())){
                             v.setBackgroundResource(R.drawable.ship_destroyed)
+                            var hitCount = 0
+                            for(doc in opponentShipsSnapshot) {
+                                val opponentShipid = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                                for(doc in userShipsSnapshot) {
+                                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                                        if (opponentShipid==id){
+                                            hitCount++
+                                        }
+                                }
+                            }
+                            if (hitCount >= 6)
+                            {
+
+                                // WIN LOGIC GOES HERE
+                            }
                         }else{
                             v.setBackgroundResource(R.drawable.miss)
                         }
