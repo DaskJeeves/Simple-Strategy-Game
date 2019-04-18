@@ -30,6 +30,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     var user1 = ""
     var activeUser = ""
     var userShipsSet = false
+    var opponentShipsSet = false
     var userMoves = ArrayList<String>()
     var userShips = ArrayList<String>()
     var opponentShips = ArrayList<String>()
@@ -300,35 +301,40 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                                         }
                                     firestoreGame.set(setUserShips, SetOptions.merge())
                                 }
-                            else ->
-                            userShipsSet = true
+                            else -> {
+                                userShipsSet = true
+                                Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
 
                 }
 
-        else ->
-        if (activeUser == userUid && userShipsSet) {
-            val newMessage = mapOf(
-                "position" to v.getTag().toString(),
-                "user" to auth.currentUser!!.uid,
-                "created" to FieldValue.serverTimestamp()
-            )
-            val firestoreMoves = firestoreGame.collection("Moves")
-                firestoreMoves.document().set(newMessage)
-                    .addOnSuccessListener {
-                        activeUser = opponentUid
-                        val setActiveUser = mapOf (
-                            "activeUser" to opponentUid
-                        )
-                        firestoreGame.set(setActiveUser, SetOptions.merge())
-                        activePlayer = 0
-                        if(opponentShips.contains(v.getTag().toString())){
-                            v.setBackgroundResource(hitColor)
-                        }else{
-                            v.setBackgroundResource(moveColor)
+             "opponent" ->
+            if (!opponentShipsSet) { Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show() }
+            else if (activeUser != auth.currentUser!!.uid) { Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show() }
+            else if (!userShipsSet) { Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show() }
+            else if ((activeUser == userUid) && userShipsSet && opponentShipsSet) {
+                val newMessage = mapOf(
+                    "position" to v.getTag().toString(),
+                    "user" to auth.currentUser!!.uid,
+                    "created" to FieldValue.serverTimestamp()
+                )
+                val firestoreMoves = firestoreGame.collection("Moves")
+                    firestoreMoves.document().set(newMessage)
+                        .addOnSuccessListener {
+                            activeUser = opponentUid
+                            val setActiveUser = mapOf (
+                                "activeUser" to opponentUid
+                            )
+                            firestoreGame.set(setActiveUser, SetOptions.merge())
+                            activePlayer = 0
+                            if(opponentShips.contains(v.getTag().toString())){
+                                v.setBackgroundResource(hitColor)
+                            }else{
+                                v.setBackgroundResource(moveColor)
+                            }
                         }
-                    }
                         .addOnFailureListener { e -> Log.e("ERROR", e.message) }
             }
         }
@@ -345,6 +351,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
             if(document != null && document.exists()) {
                 activeUser = (document.getString("activeUser").toString())
+                if (user1 == auth.currentUser!!.uid) {
+                    opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
+                }
+                else {
+                    opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
+                }
             }
         }
     }
