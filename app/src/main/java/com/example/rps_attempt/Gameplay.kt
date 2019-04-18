@@ -205,7 +205,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             if (userShipsSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
-                shipButton.setBackgroundResource(shipColor)
+                shipButton.setBackgroundResource(R.drawable.ship)
                 userShips.add(doc.data!!["position"].toString().toLowerCase())
             }
         }
@@ -234,7 +234,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 val shipButton = findViewById<TextView>(id)
                 Log.e("POSITION", doc.data!!["position"].toString().toLowerCase())
                 if(userMoves.contains(doc.data!!["position"].toString().toLowerCase())){
-                    shipButton.setBackgroundResource(hitColor)
+                    shipButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }
             }
         }
@@ -246,9 +246,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
                 if(userShips.contains(doc.data!!["position"].toString().toLowerCase())){
-                    moveButton.setBackgroundResource(hitColor)
+                    moveButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }else{
-                    moveButton.setBackgroundResource(moveColor)
+                    moveButton.setBackgroundResource(R.drawable.miss)
                 }
             }
         }
@@ -324,9 +324,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         firestoreGame.set(setActiveUser, SetOptions.merge())
                         activePlayer = 0
                         if(opponentShips.contains(v.getTag().toString())){
-                            v.setBackgroundResource(hitColor)
+                            v.setBackgroundResource(R.drawable.ship_destroyed)
                         }else{
-                            v.setBackgroundResource(moveColor)
+                            v.setBackgroundResource(R.drawable.miss)
                         }
                     }
                         .addOnFailureListener { e -> Log.e("ERROR", e.message) }
