@@ -46,7 +46,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         "e0", "e1", "e2", "e3", "e4", "e5",
         "f0", "f1", "f2", "f3", "f4", "f5" )
 
-    // Test comment for pushing with gitkraken
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +60,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         val tag = intent.getStringExtra("tag")
         if(tag!=null){
             findViewById<TextView>(R.id.game_tag).text = tag
+
+
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
             Log.e("TAG", tag)

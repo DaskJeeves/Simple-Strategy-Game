@@ -57,6 +57,24 @@ class UserDashboard : AppCompatActivity() {
         }
     }
 
+    fun getOpponentUsername(opponentUid: String): String? {
+
+        var uname = ""
+
+        val docRef = firestoreUser.document(opponentUid)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    uname = document.data!!["username"].toString()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "get failed with ", exception)
+            }
+
+        return uname
+    }
+
     /** Called when going to a gameplay page */
     fun createNewGame(view: View) {
         val uid = auth.currentUser!!.uid
@@ -119,21 +137,28 @@ class UserDashboard : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 for(doc in document){
                     if (document != null) {
-                        val activeGameButton = Button(this)
-                        activeGameButton.text = doc.id
-                        activeGameButton.tag = doc.id
-                        activeGameButton.setBackgroundColor(
-                            resources.getColor(R.color.colorAccent)
-                        )
-                        activeGameButton.setTextColor(
-                            resources.getColor(R.color.white)
-                        )
-                        activeGameButton.setOnClickListener {
-                            val intent = Intent(this, Gameplay::class.java)
-                            intent.putExtra("tag", it.tag.toString())
-                            startActivity(intent)
-                        }
-                        active_games_ll.addView(activeGameButton, lp)
+
+                        val docRef = firestoreUser.document(doc.data!!["user2"].toString())
+                        docRef.get()
+                            .addOnSuccessListener { document ->
+                                if (document != null) {
+                                    val activeGameButton = Button(this)
+                                    activeGameButton.text = document.data!!["username"].toString()
+                                    activeGameButton.tag = doc.id
+                                    activeGameButton.setBackgroundColor(
+                                        resources.getColor(R.color.colorAccent)
+                                    )
+                                    activeGameButton.setTextColor(
+                                        resources.getColor(R.color.white)
+                                    )
+                                    activeGameButton.setOnClickListener {
+                                        val intent = Intent(this, Gameplay::class.java)
+                                        intent.putExtra("tag", it.tag.toString())
+                                        startActivity(intent)
+                                    }
+                                    active_games_ll.addView(activeGameButton, lp)
+                                }
+                            }
                     }
                 }
                 // This part gets all the games where the logged in user is user2
@@ -145,42 +170,33 @@ class UserDashboard : AppCompatActivity() {
                     .addOnSuccessListener { document ->
                         for(doc in document){
                             if (document != null) {
-                                val activeGameButton = Button(this)
-                                activeGameButton.text = doc.id
-                                activeGameButton.tag = doc.id
-                                activeGameButton.setBackgroundColor(
-                                    resources.getColor(R.color.colorAccent)
-                                )
-                                activeGameButton.setTextColor(
-                                    resources.getColor(R.color.white)
-                                )
-                                activeGameButton.setOnClickListener {
-                                    val intent = Intent(this, Gameplay::class.java)
-                                    intent.putExtra("tag", it.tag.toString())
-                                    startActivity(intent)
-                                }
-                                active_games_ll.addView(activeGameButton, lp)
+
+                                val docRef = firestoreUser.document(doc.data!!["user1"].toString())
+                                docRef.get()
+                                    .addOnSuccessListener { document ->
+                                        if (document != null) {
+                                            val activeGameButton = Button(this)
+                                            activeGameButton.text = document.data!!["username"].toString()
+                                            activeGameButton.tag = doc.id
+                                            activeGameButton.setBackgroundColor(
+                                                resources.getColor(R.color.colorAccent)
+                                            )
+                                            activeGameButton.setTextColor(
+                                                resources.getColor(R.color.white)
+                                            )
+                                            activeGameButton.setOnClickListener {
+                                                val intent = Intent(this, Gameplay::class.java)
+                                                intent.putExtra("tag", it.tag.toString())
+                                                startActivity(intent)
+                                            }
+                                            active_games_ll.addView(activeGameButton, lp)
+                                        }
+                                    }
                             }
                         }
 
-                        //Add logout button to end
-                        val lp2 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                        lp2.setMargins(10, 100, 10, 0)
-                        val logoutText = TextView(this)
-                        logoutText.text = "LOGOUT"
-                        logoutText.gravity = Gravity.CENTER
-                        logoutText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18.0F)
-                        logoutText.setOnClickListener {
-                            auth = FirebaseAuth.getInstance()
-                            auth.signOut()
-                            finish()
-                        }
-                        active_games_ll.addView(logoutText, lp2)
                     }
-
             }
-
-
     }
 
     private fun realtimeUpdateListener() {
