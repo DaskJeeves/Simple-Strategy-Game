@@ -280,12 +280,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                             in 0..4 ->
                                 firestoreShips.document().set(newMessage)
                                 .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
+                                    v.setBackgroundResource(R.drawable.ship)
                                 }
                             5 ->
                                 firestoreShips.document().set(newMessage)
                                 .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
+                                    v.setBackgroundResource(R.drawable.ship)
                                     userShipsSet = true
                                     var setUserShips : Map<String, Any>
                                     if(user1 == userUid) {
