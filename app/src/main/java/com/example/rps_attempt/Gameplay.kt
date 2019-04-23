@@ -10,6 +10,9 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_gameplay.*
+import android.content.Intent
+
+
 
 
 class Gameplay : AppCompatActivity(), View.OnClickListener {
@@ -205,7 +208,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             if (userShipsSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
-                shipButton.setBackgroundResource(shipColor)
+                shipButton.setBackgroundResource(R.drawable.ship)
                 userShips.add(doc.data!!["position"].toString().toLowerCase())
             }
         }
@@ -234,7 +237,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 val shipButton = findViewById<TextView>(id)
                 Log.e("POSITION", doc.data!!["position"].toString().toLowerCase())
                 if(userMoves.contains(doc.data!!["position"].toString().toLowerCase())){
-                    shipButton.setBackgroundResource(hitColor)
+                    shipButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }
             }
         }
@@ -246,9 +249,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
                 if(userShips.contains(doc.data!!["position"].toString().toLowerCase())){
-                    moveButton.setBackgroundResource(hitColor)
+                    moveButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }else{
-                    moveButton.setBackgroundResource(moveColor)
+                    moveButton.setBackgroundResource(R.drawable.miss)
                 }
             }
         }
@@ -280,12 +283,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                             in 0..4 ->
                                 firestoreShips.document().set(newMessage)
                                 .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
+                                    v.setBackgroundResource(R.drawable.ship)
                                 }
                             5 ->
                                 firestoreShips.document().set(newMessage)
                                 .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
+                                    v.setBackgroundResource(R.drawable.ship)
                                     userShipsSet = true
                                     var setUserShips : Map<String, Any>
                                     if(user1 == userUid) {
@@ -313,6 +316,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 "position" to v.getTag().toString(),
                 "user" to auth.currentUser!!.uid,
                 "created" to FieldValue.serverTimestamp()
+
             )
             val firestoreMoves = firestoreGame.collection("Moves")
                 firestoreMoves.document().set(newMessage)
@@ -324,9 +328,26 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         firestoreGame.set(setActiveUser, SetOptions.merge())
                         activePlayer = 0
                         if(opponentShips.contains(v.getTag().toString())){
-                            v.setBackgroundResource(hitColor)
+                            v.setBackgroundResource(R.drawable.ship_destroyed)
+                            var hitCount = 0
+                            for(doc in opponentShipsSnapshot) {
+                                val opponentShipid = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                                for(doc in userShipsSnapshot) {
+                                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
+                                        if (opponentShipid==id){
+                                            hitCount++
+                                        }
+                                }
+                            }
+                            if (hitCount >= 6)
+                            {
+
+                                val intent = Intent(this, victory_screen::class.java).apply {
+                                }
+                                startActivity(intent)
+                            }
                         }else{
-                            v.setBackgroundResource(moveColor)
+                            v.setBackgroundResource(R.drawable.miss)
                         }
                     }
                         .addOnFailureListener { e -> Log.e("ERROR", e.message) }
