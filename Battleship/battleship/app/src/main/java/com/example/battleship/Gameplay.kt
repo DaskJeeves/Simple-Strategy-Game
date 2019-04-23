@@ -44,7 +44,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         "c0", "c1", "c2", "c3", "c4", "c5",
         "d0", "d1", "d2", "d3", "d4", "d5",
         "e0", "e1", "e2", "e3", "e4", "e5",
-        "f0", "f1", "f2", "f3", "f4", "f5" )
+        "f0", "f1", "f2", "f3", "f4", "f5"
+    )
 
 
 
@@ -329,7 +330,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                             v.setBackgroundResource(moveColor)
                         }
                     }
-                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                    .addOnFailureListener { e -> Log.e("ERROR", e.message) }
             }
         }
     }

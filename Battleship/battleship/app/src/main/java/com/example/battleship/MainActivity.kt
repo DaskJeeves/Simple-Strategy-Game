@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
 //        Uncomment if it breaks because of signed in user
-         auth.signOut()
+//         auth.signOut()
 
         val user = auth.currentUser
 
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
             Log.e("USER IS", user.toString())
             val intent = Intent(this, UserDashboard::class.java)
             startActivity(intent)
+            finish()
         } else {
             // No user is signed in
             Log.e("USER IS", "NULL")
@@ -90,6 +91,8 @@ class MainActivity : AppCompatActivity() {
                 for(doc in document){
                     if (document != null) {
                         signInEmail(doc.data!!["email"].toString(), password, false)
+                    }else{
+                        Log.e("DOCUMENT", "NULL")
                     }
                 }
             }

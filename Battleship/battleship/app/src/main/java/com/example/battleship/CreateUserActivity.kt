@@ -99,9 +99,7 @@ class CreateUserActivity : AppCompatActivity() {
                             }
                             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
 
-
                         auth.signInWithEmailAndPassword(email, username)
-
 
                         val i = Intent()
                         i.putExtra("user", username)
