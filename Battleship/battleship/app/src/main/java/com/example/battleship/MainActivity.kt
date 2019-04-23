@@ -75,6 +75,11 @@ class MainActivity : AppCompatActivity() {
                     }
                     val intent = Intent(this, UserDashboard::class.java)
                     startActivity(intent)
+                }else{
+                    Toast.makeText(
+                        baseContext, task.exception!!.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }.addOnFailureListener {
                 if(tryUsername){
