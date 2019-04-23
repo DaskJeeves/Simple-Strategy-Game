@@ -10,6 +10,9 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_gameplay.*
+import android.content.Intent
+
+
 
 
 class Gameplay : AppCompatActivity(), View.OnClickListener {
@@ -339,7 +342,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                             if (hitCount >= 6)
                             {
 
-                                // WIN LOGIC GOES HERE
+                                val intent = Intent(this, victory_screen::class.java).apply {
+                                }
+                                startActivity(intent)
                             }
                         }else{
                             v.setBackgroundResource(R.drawable.miss)
