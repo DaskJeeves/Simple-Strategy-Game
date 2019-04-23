@@ -305,7 +305,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                                         }
                                 else -> {
                                     userShipsSet = true
-                                    Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
                                 }
                             }
                         }
