@@ -114,8 +114,8 @@ class CreateUserActivity : AppCompatActivity() {
                         Log.e("SHOW", "WEAK PASSWORD MESSAGE")
                     }
                     Toast.makeText(
-                        baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT
+                        baseContext, task.exception!!.message,
+                        Toast.LENGTH_LONG
                     ).show()
                     // updateUI(null)
                 }
