@@ -310,7 +310,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
                 }
 
-             "opponent" ->
+            "opponent" ->
             if (!opponentShipsSet) { Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show() }
             else if (activeUser != auth.currentUser!!.uid) { Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show() }
             else if (!userShipsSet) { Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show() }
