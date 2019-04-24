@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_gameplay.*
@@ -29,6 +30,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     var user1 = ""
     var activeUser = ""
     var userShipsSet = false
+    var opponentShipsSet = false
     var userMoves = ArrayList<String>()
     var userShips = ArrayList<String>()
     var opponentShips = ArrayList<String>()
@@ -265,73 +267,79 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         when (currentBoardView) {
             "user" ->
 
-            if (!userShipsSet) {
-                val newMessage = mapOf(
-                    "position" to v.getTag().toString(),
-                    "user" to auth.currentUser!!.uid,
-                    "hit" to false,
-                    "created" to FieldValue.serverTimestamp()
-                )
-                val firestoreShips = firestoreGame.collection("Ships")
-                val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
-                userShips.get()
-                    .addOnSuccessListener { document ->
-                        Log.e("SIZE:", document.size().toString())
-                        when (document.size()) {
-                            in 0..4 ->
-                                firestoreShips.document().set(newMessage)
-                                .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
-                                }
-                            5 ->
-                                firestoreShips.document().set(newMessage)
-                                .addOnSuccessListener {
-                                    v.setBackgroundResource(shipColor)
-                                    userShipsSet = true
-                                    var setUserShips : Map<String, Any>
-                                    if(user1 == userUid) {
-                                         setUserShips = mapOf(
-                                            "user1ShipsSet" to true
-                                        )
-                                    }
-                                    else {
-                                         setUserShips = mapOf(
-                                            "user2ShipsSet" to true
-                                            )
+                if (userShipsSet) { Toast.makeText(this, "All your ships are set.", Toast.LENGTH_LONG).show() }
+                else if (!userShipsSet) {
+                    val newMessage = mapOf(
+                        "position" to v.getTag().toString(),
+                        "user" to auth.currentUser!!.uid,
+                        "hit" to false,
+                        "created" to FieldValue.serverTimestamp()
+                    )
+                    val firestoreShips = firestoreGame.collection("Ships")
+                    val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+                    userShips.get()
+                        .addOnSuccessListener { document ->
+                            Log.e("SIZE:", document.size().toString())
+                            when (document.size()) {
+                                in 0..4 ->
+                                    firestoreShips.document().set(newMessage)
+                                        .addOnSuccessListener {
+                                            v.setBackgroundResource(shipColor)
                                         }
-                                    firestoreGame.set(setUserShips, SetOptions.merge())
+                                5 ->
+                                    firestoreShips.document().set(newMessage)
+                                        .addOnSuccessListener {
+                                            v.setBackgroundResource(shipColor)
+                                            userShipsSet = true
+                                            var setUserShips : Map<String, Any>
+                                            if(user1 == userUid) {
+                                                setUserShips = mapOf(
+                                                    "user1ShipsSet" to true
+                                                )
+                                            }
+                                            else {
+                                                setUserShips = mapOf(
+                                                    "user2ShipsSet" to true
+                                                )
+                                            }
+                                            firestoreGame.set(setUserShips, SetOptions.merge())
+                                        }
+                                else -> {
+                                    userShipsSet = true
                                 }
-                            else ->
-                            userShipsSet = true
+                            }
                         }
-                    }
 
                 }
 
-        else ->
-        if (activeUser == userUid && userShipsSet) {
-            val newMessage = mapOf(
-                "position" to v.getTag().toString(),
-                "user" to auth.currentUser!!.uid,
-                "created" to FieldValue.serverTimestamp()
-            )
-            val firestoreMoves = firestoreGame.collection("Moves")
-                firestoreMoves.document().set(newMessage)
-                    .addOnSuccessListener {
-                        activeUser = opponentUid
-                        val setActiveUser = mapOf (
-                            "activeUser" to opponentUid
-                        )
-                        firestoreGame.set(setActiveUser, SetOptions.merge())
-                        activePlayer = 0
-                        if(opponentShips.contains(v.getTag().toString())){
-                            v.setBackgroundResource(hitColor)
-                        }else{
-                            v.setBackgroundResource(moveColor)
+            "opponent" ->
+                if (!userShipsSet) { Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show() }
+                else if (!opponentShipsSet) { Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show() }
+                else if (activeUser != auth.currentUser!!.uid) { Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show() }
+                else if ((activeUser == userUid) && userShipsSet && opponentShipsSet) {
+                    val newMessage = mapOf(
+                        "position" to v.getTag().toString(),
+                        "user" to auth.currentUser!!.uid,
+                        "created" to FieldValue.serverTimestamp()
+                    )
+                    val firestoreMoves = firestoreGame.collection("Moves")
+                    firestoreMoves.document().set(newMessage)
+                        .addOnSuccessListener {
+                            activeUser = opponentUid
+                            val setActiveUser = mapOf (
+                                "activeUser" to opponentUid
+                            )
+                            firestoreGame.set(setActiveUser, SetOptions.merge())
+                            activePlayer = 0
+                            if(opponentShips.contains(v.getTag().toString())){
+                                v.setBackgroundResource(hitColor)
+                            }else{
+                                v.setBackgroundResource(moveColor)
+                            }
                         }
-                    }
-                    .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-            }
+
+                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                }
         }
     }
 
@@ -346,6 +354,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
             if(document != null && document.exists()) {
                 activeUser = (document.getString("activeUser").toString())
+                if (user1 == auth.currentUser!!.uid) {
+                    opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
+                }
+                else {
+                    opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
+                }
             }
         }
     }
