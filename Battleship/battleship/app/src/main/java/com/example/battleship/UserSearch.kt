@@ -53,7 +53,7 @@ class UserSearch : AppCompatActivity() {
                         activeUserButton.text = doc.data["username"].toString()
                         activeUserButton.tag = doc.id
                         activeUserButton.setBackgroundColor(
-                            resources.getColor(R.color.colorAccent)
+                            resources.getColor(R.color.active_button)
                         )
                         activeUserButton.setTextColor(
                             resources.getColor(R.color.white)

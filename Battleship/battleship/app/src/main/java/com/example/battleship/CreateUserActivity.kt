@@ -99,9 +99,7 @@ class CreateUserActivity : AppCompatActivity() {
                             }
                             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
 
-
                         auth.signInWithEmailAndPassword(email, username)
-
 
                         val i = Intent()
                         i.putExtra("user", username)
@@ -109,11 +107,15 @@ class CreateUserActivity : AppCompatActivity() {
                         finish()
                     }
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("createUserWithEmail", ":failure", task.exception)
+                    // If create user fails, display a message to the user.
+                    Log.e("createUserWithEmail", ":failure", task.exception)
+                    Log.e("EXCEPTION", task.exception!!.message.toString())
+                    if(task.exception.toString().contains("FirebaseAuthWeakPasswordException")){
+                        Log.e("SHOW", "WEAK PASSWORD MESSAGE")
+                    }
                     Toast.makeText(
-                        baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT
+                        baseContext, task.exception!!.message,
+                        Toast.LENGTH_LONG
                     ).show()
                     // updateUI(null)
                 }
