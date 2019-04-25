@@ -44,12 +44,14 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     var currentBoardView = "user"
 
-    val allButtons = listOf("a0", "a1", "a2", "a3", "a4", "a5",
+    val allButtons = listOf(
+        "a0", "a1", "a2", "a3", "a4", "a5",
         "b0", "b1", "b2", "b3", "b4", "b5",
         "c0", "c1", "c2", "c3", "c4", "c5",
         "d0", "d1", "d2", "d3", "d4", "d5",
         "e0", "e1", "e2", "e3", "e4", "e5",
-        "f0", "f1", "f2", "f3", "f4", "f5" )
+        "f0", "f1", "f2", "f3", "f4", "f5"
+    )
 
     // Test comment for pushing with gitkraken
 
@@ -64,7 +66,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
 
         val tag = intent.getStringExtra("tag")
-        if(tag!=null){
+        if (tag != null) {
             findViewById<TextView>(R.id.game_tag).text = tag
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
@@ -73,7 +75,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
             firestoreGame.get()
                 .addOnSuccessListener { document ->
-                    if(document != null){
+                    if (document != null) {
                         Log.e("DARA", document.data.toString())
                         Log.e("USER", auth.currentUser!!.uid)
                         Log.e("USER2", document.data!!["user2"].toString())
@@ -81,25 +83,25 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         userUid = auth.currentUser!!.uid
                         user1 = document.getString("user1").toString()
                         activeUser = document.getString("activeUser").toString()
-                        opponentUid = if(document.getString("user2").toString() == auth.currentUser!!.uid){
+                        opponentUid = if (document.getString("user2").toString() == auth.currentUser!!.uid) {
                             document.getString("user1").toString()
-                        }else{
+                        } else {
                             document.getString("user2").toString()
                         }
 
                         loadSnapshots()
                         loadUserSnapshots()
-                        realtimeUpdateListener()
+//                        realtimeUpdateListener()
                     }
                 }
         }
 
-        switchBoardView.setOnClickListener{
-            if(currentBoardView == "user"){
+        switchBoardView.setOnClickListener {
+            if (currentBoardView == "user") {
                 currentBoardView = "opponent"
                 switchBoardView.text = "View My Board"
                 loadOpponentSnapshots()
-            }else{
+            } else {
                 currentBoardView = "user"
                 switchBoardView.text = "View Opponents Board"
                 loadUserSnapshots()
@@ -109,8 +111,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 //      realtimeUpdateListener()
     }
 
-    fun clearButtons(){
-        for(btn in allButtons){
+    fun clearButtons() {
+        for (btn in allButtons) {
             val button = findViewById<Button>(getResources().getIdentifier(btn, "id", packageName))
             button.setBackgroundResource(R.drawable.empty)
         }
@@ -128,7 +130,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         loadOpponentShips()
     }
 
-    fun loadUserSnapshots(){
+    fun loadUserSnapshots() {
         val firestoreShips = firestoreGame.collection("Ships")
         val firestoreMoves = firestoreGame.collection("Moves")
 
@@ -147,7 +149,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
     }
 
-    fun loadOpponentSnapshots(){
+    fun loadOpponentSnapshots() {
         val firestoreShips = firestoreGame.collection("Ships")
         val firestoreMoves = firestoreGame.collection("Moves")
 
@@ -202,10 +204,10 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadUserShips() {
         userShips = ArrayList<String>()
-        if(userShipsSnapshot.size() > 5){
+        if (userShipsSnapshot.size() > 5) {
             userShipsSet = true
         }
-        for(doc in userShipsSnapshot) {
+        for (doc in userShipsSnapshot) {
             if (userShipsSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
@@ -217,7 +219,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadUserMoves() {
         userMoves = ArrayList<String>()
-        for(doc in userMovesSnapshot) {
+        for (doc in userMovesSnapshot) {
             if (userMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
@@ -230,14 +232,14 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     fun loadOpponentShips() {
         opponentShips = ArrayList<String>()
         Log.e("USER MOVES", userMoves.toString())
-        for(doc in opponentShipsSnapshot) {
+        for (doc in opponentShipsSnapshot) {
             Log.e("OPPONENT SHIP", doc.data.toString())
             if (opponentShipsSnapshot != null) {
                 opponentShips.add(doc.data!!["position"].toString().toLowerCase())
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
                 Log.e("POSITION", doc.data!!["position"].toString().toLowerCase())
-                if(userMoves.contains(doc.data!!["position"].toString().toLowerCase())){
+                if (userMoves.contains(doc.data!!["position"].toString().toLowerCase())) {
                     shipButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }
             }
@@ -245,13 +247,13 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadOpponentMoves() {
-        for(doc in opponentMovesSnapshot) {
+        for (doc in opponentMovesSnapshot) {
             if (opponentMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
-                if(userShips.contains(doc.data!!["position"].toString().toLowerCase())){
+                if (userShips.contains(doc.data!!["position"].toString().toLowerCase())) {
                     moveButton.setBackgroundResource(R.drawable.ship_destroyed)
-                }else{
+                } else {
                     moveButton.setBackgroundResource(R.drawable.miss)
                 }
             }
@@ -268,115 +270,115 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         when (currentBoardView) {
             "user" ->
 
-            if (!userShipsSet) {
-                val newMessage = mapOf(
-                    "position" to v.getTag().toString(),
-                    "user" to auth.currentUser!!.uid,
-                    "hit" to false,
-                    "created" to FieldValue.serverTimestamp()
-                )
-                val firestoreShips = firestoreGame.collection("Ships")
-                val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
-                userShips.get()
-                    .addOnSuccessListener { document ->
-                        Log.e("SIZE:", document.size().toString())
-                        when (document.size()) {
-                            in 0..4 ->
-                                firestoreShips.document().set(newMessage)
-                                .addOnSuccessListener {
-                                    v.setBackgroundResource(R.drawable.ship)
-                                }
-                            5 ->
-                                firestoreShips.document().set(newMessage)
-                                .addOnSuccessListener {
-                                    v.setBackgroundResource(R.drawable.ship)
-                                    userShipsSet = true
-                                    var setUserShips : Map<String, Any>
-                                    if(user1 == userUid) {
-                                         setUserShips = mapOf(
-                                            "user1ShipsSet" to true
-                                        )
-                                    }
-                                    else {
-                                         setUserShips = mapOf(
-                                            "user2ShipsSet" to true
-                                            )
+                if (!userShipsSet) {
+                    val newMessage = mapOf(
+                        "position" to v.getTag().toString(),
+                        "user" to auth.currentUser!!.uid,
+                        "hit" to false,
+                        "created" to FieldValue.serverTimestamp()
+                    )
+                    val firestoreShips = firestoreGame.collection("Ships")
+                    val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+                    userShips.get()
+                        .addOnSuccessListener { document ->
+                            Log.e("SIZE:", document.size().toString())
+                            when (document.size()) {
+                                in 0..4 ->
+                                    firestoreShips.document().set(newMessage)
+                                        .addOnSuccessListener {
+                                            v.setBackgroundResource(R.drawable.ship)
                                         }
-                                    firestoreGame.set(setUserShips, SetOptions.merge())
+                                5 ->
+                                    firestoreShips.document().set(newMessage)
+                                        .addOnSuccessListener {
+                                            v.setBackgroundResource(R.drawable.ship)
+                                            userShipsSet = true
+                                            var setUserShips: Map<String, Any>
+                                            if (user1 == userUid) {
+                                                setUserShips = mapOf(
+                                                    "user1ShipsSet" to true
+                                                )
+                                            } else {
+                                                setUserShips = mapOf(
+                                                    "user2ShipsSet" to true
+                                                )
+                                            }
+                                            firestoreGame.set(setUserShips, SetOptions.merge())
+                                        }
+                                else -> {
+                                    userShipsSet = true
+                                    Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
                                 }
-                            else -> {
-                                userShipsSet = true
-                                Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
                             }
                         }
-                    }
 
                 }
+            else ->
+                if (activeUser == userUid && userShipsSet) {
+                    val newMessage = mapOf(
+                        "position" to v.getTag().toString(),
+                        "user" to auth.currentUser!!.uid,
+                        "created" to FieldValue.serverTimestamp()
 
-        "opponent" ->
-            if (!opponentShipsSet) { Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show() }
-            else if (activeUser != auth.currentUser!!.uid) { Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show() }
-            else if (!userShipsSet) { Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show() }
-            else if ((activeUser == userUid) && userShipsSet && opponentShipsSet) {
-            val newMessage = mapOf(
-                "position" to v.getTag().toString(),
-                "user" to auth.currentUser!!.uid,
-                "created" to FieldValue.serverTimestamp()
-
-            )
-            val firestoreMoves = firestoreGame.collection("Moves")
-                firestoreMoves.document().set(newMessage)
-                    .addOnSuccessListener {
-                        activeUser = opponentUid
-                        val setActiveUser = mapOf (
-                            "activeUser" to opponentUid
-                        )
-                        firestoreGame.set(setActiveUser, SetOptions.merge())
-                        activePlayer = 0
-                        if(opponentShips.contains(v.getTag().toString())){
-                            v.setBackgroundResource(R.drawable.ship_destroyed)
-                            var hitCount = 0
-                            for(doc in opponentShipsSnapshot) {
-                                val opponentShipid = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                                for(doc in userShipsSnapshot) {
-                                        val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                                        if (opponentShipid==id){
+                    )
+                    val firestoreMoves = firestoreGame.collection("Moves")
+                    firestoreMoves.document().set(newMessage)
+                        .addOnSuccessListener {
+                            activeUser = opponentUid
+                            val setActiveUser = mapOf(
+                                "activeUser" to opponentUid
+                            )
+                            firestoreGame.set(setActiveUser, SetOptions.merge())
+                            activePlayer = 0
+                            if (opponentShips.contains(v.getTag().toString())) {
+                                v.setBackgroundResource(R.drawable.ship_destroyed)
+                                var hitCount = 0
+                                for (doc in opponentShipsSnapshot) {
+                                    val opponentShipid = resources.getIdentifier(
+                                        doc.data!!["position"].toString().toLowerCase(),
+                                        "id",
+                                        packageName
+                                    )
+                                    for (doc in userShipsSnapshot) {
+                                        val id = resources.getIdentifier(
+                                            doc.data!!["position"].toString().toLowerCase(),
+                                            "id",
+                                            packageName
+                                        )
+                                        if (opponentShipid == id) {
                                             hitCount++
                                         }
+                                    }
                                 }
-                            }
-                            if (hitCount >= 6)
-                            {
+                                if (hitCount >= 6) {
 
-                                val intent = Intent(this, victory_screen::class.java).apply {
+                                    val intent = Intent(this, victory_screen::class.java).apply {
+                                    }
+                                    startActivity(intent)
                                 }
-                                startActivity(intent)
+                            } else {
+                                v.setBackgroundResource(R.drawable.miss)
                             }
-                        }else{
-                            v.setBackgroundResource(R.drawable.miss)
-
-                        }
-                        .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-            }
-        }
-    }
-
-
-    private fun realtimeUpdateListener() {
-
-        firestoreGame.addSnapshotListener { document, e ->
-
-            if(e != null) {
-                Log.e("ERROR", e.message)
-            }
-
-            if(document != null && document.exists()) {
-                activeUser = (document.getString("activeUser").toString())
-                if (user1 == auth.currentUser!!.uid) {
-                    opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
+                        }.addOnFailureListener { e -> Log.e("ERROR", e.message) s }
                 }
-                else {
-                    opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
+        }
+
+
+        fun realtimeUpdateListener() {
+
+            firestoreGame.addSnapshotListener { document, e ->
+
+                if (e != null) {
+                    Log.e("ERROR", e.message)
+                }
+
+                if (document != null && document.exists()) {
+                    activeUser = (document.getString("activeUser").toString())
+                    if (user1 == auth.currentUser!!.uid) {
+                        opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
+                    } else {
+                        opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
+                    }
                 }
             }
         }
