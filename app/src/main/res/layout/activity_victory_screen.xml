@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".victory_screen">
+        tools:context=".victory_screen" android:id="@+id/coordinatorLayout">
 
     <android.support.design.widget.AppBarLayout
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:layout_width="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:id="@+id/appBarLayout">
 
         <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+        />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_victory_screen"/>
+    <include layout="@layout/content_victory_screen"
+             android:layout_height="wrap_content"
+             android:layout_width="54dp" android:id="@+id/include" tools:layout_editor_absoluteY="162dp"
+             tools:layout_editor_absoluteX="0dp"/>
 
-    <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_dialog_email"/>
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/victory_image" android:id="@+id/imageView3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toTopOf="parent" android:background="@color/background_blue"/>
+    <Button
+            android:text="Play Again"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="555dp"
+            tools:layout_editor_absoluteX="88dp" android:id="@+id/button5" android:onClick="gotoMenu"/>
+    <Button
+            android:text="RETRN TO MAIN MENU"
+            android:layout_width="227dp"
+            android:layout_height="48dp" tools:layout_editor_absoluteY="632dp"
+            tools:layout_editor_absoluteX="88dp" android:id="@+id/button6"/>
+    <android.support.constraint.Constraints android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                            android:id="@+id/constraints"/>
+    <android.support.constraint.Group android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                      android:id="@+id/group"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</android.support.constraint.ConstraintLayout>
