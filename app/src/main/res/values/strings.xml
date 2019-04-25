@@ -14,4 +14,5 @@
     <string name="email">Email</string>
     <string name="active_games">ACTIVE GAMES</string>
     <string name="view_board">View Opponents Board</string>
+    <string name="title_activity_victory_screen">victory_screen</string>
 </resources>
