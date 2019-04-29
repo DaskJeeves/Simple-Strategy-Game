@@ -92,7 +92,9 @@ class CreateUserActivity : AppCompatActivity() {
                         val uid = auth.currentUser!!.uid
                         val newMessage = mapOf(
                             "username" to username,
-                            "email" to email)
+                            "email" to email,
+                            "wins" to 0,
+                            "losses" to 0)
                         firestoreUser.document(uid).set(newMessage)
                             .addOnSuccessListener {
                                 Toast.makeText(this@CreateUserActivity, "User Created", Toast.LENGTH_SHORT).show()

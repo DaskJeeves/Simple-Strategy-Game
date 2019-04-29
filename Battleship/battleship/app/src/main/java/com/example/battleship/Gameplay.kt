@@ -37,6 +37,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     var userMoves = ArrayList<String>()
     var userShips = ArrayList<String>()
     var opponentShips = ArrayList<String>()
+    var opponentMoves = ArrayList<String>()
     lateinit var userShipsSnapshot: QuerySnapshot
     lateinit var userMovesSnapshot: QuerySnapshot
     lateinit var opponentShipsSnapshot: QuerySnapshot
@@ -52,8 +53,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         "e0", "e1", "e2", "e3", "e4", "e5",
         "f0", "f1", "f2", "f3", "f4", "f5"
     )
-
-    // Test comment for pushing with gitkraken
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -223,7 +222,11 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             if (userMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
-                moveButton.setBackgroundResource(moveColor)
+                if (opponentShips.contains(doc.data!!["position"].toString().toLowerCase())) {
+                    moveButton.setBackgroundResource(R.drawable.ship_destroyed)
+                } else {
+                    moveButton.setBackgroundResource(R.drawable.miss)
+                }
                 userMoves.add(doc.data!!["position"].toString().toLowerCase())
             }
         }
@@ -249,6 +252,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     fun loadOpponentMoves() {
         for (doc in opponentMovesSnapshot) {
             if (opponentMovesSnapshot != null) {
+                opponentMoves.add(doc.data!!["position"].toString().toLowerCase())
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val moveButton = findViewById<TextView>(id)
                 if (userShips.contains(doc.data!!["position"].toString().toLowerCase())) {
@@ -262,10 +266,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
 
     override fun onClick(v: View) {
-
-        Log.e("USERSHIPSSET", userShipsSet.toString())
-        Log.e("ACTIVEUSER", activeUser)
-        Log.e("USERID", userUid)
 
         when (currentBoardView) {
             "user" ->
@@ -319,43 +319,24 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         "position" to v.getTag().toString(),
                         "user" to auth.currentUser!!.uid,
                         "created" to FieldValue.serverTimestamp()
-
                     )
+                    userMoves.add(v.getTag().toString())
                     val firestoreMoves = firestoreGame.collection("Moves")
                     firestoreMoves.document().set(newMessage)
                         .addOnSuccessListener {
-                            activeUser = opponentUid
-                            val setActiveUser = mapOf(
-                                "activeUser" to opponentUid
-                            )
-                            firestoreGame.set(setActiveUser, SetOptions.merge())
-                            activePlayer = 0
+                            if(opponentUid == "COMPUTER"){
+                                setComputerMove()
+                            }else{
+                                activeUser = opponentUid
+                                val setActiveUser = mapOf(
+                                    "activeUser" to opponentUid
+                                )
+                                firestoreGame.set(setActiveUser, SetOptions.merge())
+                                activePlayer = 0
+                            }
                             if (opponentShips.contains(v.getTag().toString())) {
                                 v.setBackgroundResource(R.drawable.ship_destroyed)
-                                var hitCount = 0
-                                for (doc in opponentShipsSnapshot) {
-                                    val opponentShipid = resources.getIdentifier(
-                                        doc.data!!["position"].toString().toLowerCase(),
-                                        "id",
-                                        packageName
-                                    )
-                                    for (doc in userShipsSnapshot) {
-                                        val id = resources.getIdentifier(
-                                            doc.data!!["position"].toString().toLowerCase(),
-                                            "id",
-                                            packageName
-                                        )
-                                        if (opponentShipid == id) {
-                                            hitCount++
-                                        }
-                                    }
-                                }
-                                if (hitCount >= 6) {
-
-                                    val intent = Intent(this, victory_screen::class.java).apply {
-                                    }
-                                    startActivity(intent)
-                                }
+                                checkForWin()
                             } else {
                                 v.setBackgroundResource(R.drawable.miss)
                             }
@@ -363,26 +344,77 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 }
         }
 
+    }
 
-        fun realtimeUpdateListener() {
+    fun checkForWin(){
+        var hitCount = 0
+        for(move in userMoves){
+            if(move in opponentShips){
+                hitCount++
+            }
+        }
+        Log.e("HITCOUNT", hitCount.toString())
+        if (hitCount >= 5) {
+            firestoreGame.update("status", "inactive")
+            val intent = Intent(this, victory_screen::class.java).apply {
+            }
+            startActivity(intent)
+            finish()
+        }
+        var opponentHitCount = 0
+        for(move in opponentMoves){
+            if(move in userShips){
+                hitCount++
+            }
+        }
+        Log.e("OPPONENTHITCOUNT", opponentHitCount.toString())
+        if (hitCount >= 5) {
+            // LOSS SCREEN
+//            val intent = Intent(this, victory_screen::class.java).apply {
+//            }
+//            startActivity(intent)
+        }
 
-            firestoreGame.addSnapshotListener { document, e ->
+    }
 
-                if (e != null) {
-                    Log.e("ERROR", e.message)
-                }
+    fun setComputerMove(){
 
-                if (document != null && document.exists()) {
-                    activeUser = (document.getString("activeUser").toString())
-                    if (user1 == auth.currentUser!!.uid) {
-                        opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
-                    } else {
-                        opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
-                    }
+        val firestoreMoves = firestoreGame.collection("Moves")
+        var randomPosition = allButtons.random()
+        while(randomPosition in opponentMoves){
+            randomPosition = allButtons.random()
+        }
+        val newMessage = mapOf(
+            "position" to randomPosition,
+            "user" to "COMPUTER",
+            "created" to FieldValue.serverTimestamp()
+        )
+        Log.e("CPU MOVE:", randomPosition)
+        opponentMoves.add(randomPosition)
+        firestoreMoves.document().set(newMessage)
+        checkForWin()
+    }
+
+
+    fun realtimeUpdateListener() {
+
+        firestoreGame.addSnapshotListener { document, e ->
+
+            if (e != null) {
+                Log.e("ERROR", e.message)
+            }
+
+            if (document != null && document.exists()) {
+                activeUser = (document.getString("activeUser").toString())
+                if (user1 == auth.currentUser!!.uid) {
+                    opponentShipsSet = (document.getBoolean("user2ShipsSet")!!)
+                } else {
+                    opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
                 }
             }
         }
     }
+
 }
 
 

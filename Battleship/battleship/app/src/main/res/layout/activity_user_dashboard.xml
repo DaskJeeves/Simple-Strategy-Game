@@ -62,7 +62,7 @@
                             android:text="0"
                             android:layout_width="24dp"
                             android:layout_height="28dp"
-                            android:id="@+id/textView7" app:layout_constraintStart_toStartOf="@+id/textView5"
+                            android:id="@+id/user_wins" app:layout_constraintStart_toStartOf="@+id/textView5"
                             app:layout_constraintEnd_toEndOf="@+id/textView5" android:fontFamily="@font/new_rocker"
                             android:textSize="24sp" android:layout_marginTop="12dp"
                             app:layout_constraintTop_toBottomOf="@+id/textView5"/>
@@ -70,7 +70,7 @@
                             android:text="0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/textView8" app:layout_constraintStart_toStartOf="@+id/textView6"
+                            android:id="@+id/user_losses" app:layout_constraintStart_toStartOf="@+id/textView6"
                             app:layout_constraintEnd_toEndOf="@+id/textView6" android:layout_marginTop="11dp"
                             app:layout_constraintTop_toBottomOf="@+id/textView6" android:textSize="24sp"
                             android:fontFamily="@font/new_rocker"/>
@@ -79,7 +79,7 @@
                             android:layout_height="277dp" app:srcCompat="@drawable/banner2"
                             app:layout_constraintEnd_toEndOf="@+id/textView6"
                             android:id="@+id/imageView" app:layout_constraintStart_toStartOf="@+id/textView5"
-                            android:layout_marginTop="20dp" app:layout_constraintTop_toBottomOf="@+id/textView7"
+                            android:layout_marginTop="20dp" app:layout_constraintTop_toBottomOf="@+id/user_wins"
                             app:layout_constraintHorizontal_bias="0.507"/>
                     <Button
                             android:text="@string/singleplayer"

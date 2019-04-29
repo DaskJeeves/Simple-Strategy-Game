@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log
 import android.view.View
+import com.google.common.net.InetAddresses.increment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +26,6 @@ class victory_screen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_victory_screen)
-        setSupportActionBar(toolbar)
 
 
         // GET THE USER THAT WON AND DISPLAY IT!
@@ -42,7 +42,6 @@ class victory_screen : AppCompatActivity() {
         }
         if (hitCount >= 6)
         {
-
             val intent = Intent(this, victory_screen::class.java).apply {
             }
             startActivity(intent)
@@ -50,13 +49,30 @@ class victory_screen : AppCompatActivity() {
         */
 
 
+        //INCREMENT WIN COUNT
 
+        auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser
+
+        val docRef = firestoreUser.document(user!!.uid)
+        docRef.get().addOnSuccessListener {document ->
+            if(document.data?.get("wins") != null){
+                val newWins = document.data!!["wins"].toString().toInt() + 1
+                docRef.update(mapOf(
+                    "wins" to newWins)
+                )
+            }else{
+                docRef.update(mapOf(
+                    "wins" to 1)
+                )
+            }
+        }
     }
+
     fun gotoMenu(v: View) {
         val intent = Intent(this, UserDashboard::class.java)
         startActivity(intent)
-
-
+        finish()
     }
 
     fun createNewGame(view: View) {

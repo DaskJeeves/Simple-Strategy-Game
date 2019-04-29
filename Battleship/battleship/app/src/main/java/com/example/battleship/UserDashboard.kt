@@ -10,10 +10,11 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_user_dashboard.*
 
-// test
 
 class UserDashboard : AppCompatActivity() {
 
@@ -27,6 +28,15 @@ class UserDashboard : AppCompatActivity() {
     private val TAG = "USERDASHBOARD"
 
     var gameIds = ArrayList<String>()
+
+    val allButtons = listOf(
+        "a0", "a1", "a2", "a3", "a4", "a5",
+        "b0", "b1", "b2", "b3", "b4", "b5",
+        "c0", "c1", "c2", "c3", "c4", "c5",
+        "d0", "d1", "d2", "d3", "d4", "d5",
+        "e0", "e1", "e2", "e3", "e4", "e5",
+        "f0", "f1", "f2", "f3", "f4", "f5"
+    )
 
 
     @SuppressLint("SetTextI18n")
@@ -42,10 +52,19 @@ class UserDashboard : AppCompatActivity() {
         docRef.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    Log.e(TAG, "DocumentSnapshot data: " + document.data)
                     // Capture the layout's TextView and set the string as its text
                     val welcomeText = findViewById<TextView>(R.id.welcome_text)
                     welcomeText.text = """     ${document.data!!["username"].toString()}"""
+                    if(document.data!!["wins"] != null){
+                        user_wins.text = document.data!!["wins"].toString()
+                    }else{
+                        user_wins.text = "0"
+                    }
+                    if(document.data!!["losses"] != null){
+                        user_losses.text = document.data!!["losses"].toString()
+                    }else{
+                        user_losses.text = "0"
+                    }
                 } else {
                     Log.e(TAG, "No such document")
                 }
@@ -67,7 +86,10 @@ class UserDashboard : AppCompatActivity() {
             "user1" to uid,
             "user2" to "COMPUTER",
             "status" to "active",
-            "created" to FieldValue.serverTimestamp()
+            "created" to FieldValue.serverTimestamp(),
+            "user1ShipsSet" to false,
+            "user2ShipsSet" to false,
+            "activeUser" to uid
         )
 
         val newGame = firestoreGame.document()
@@ -75,12 +97,37 @@ class UserDashboard : AppCompatActivity() {
         newGame.set(newMessage)
             .addOnSuccessListener {
                 Log.e("NEW GAME", "SUCCESS")
+
+                createRandomComputerShips(newGame)
+
+                val intent = Intent(this, Gameplay::class.java)
+                intent.putExtra("tag", newGame.id)
+                startActivity(intent)
             }
             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
 
-        val intent = Intent(this, Gameplay::class.java)
-        intent.putExtra("tag", newGame.id)
-        startActivity(intent)
+    }
+
+    fun createRandomComputerShips(gameRef: DocumentReference){
+        var i = 0
+        var cShips = ArrayList<String>()
+        while(i < 6){
+            val firestoreShips = gameRef.collection("Ships")
+            var randomPosition = allButtons.random()
+            while(randomPosition in cShips){
+                randomPosition = allButtons.random()
+            }
+            cShips.add(randomPosition)
+            val newMessage = mapOf(
+                "position" to randomPosition,
+                "user" to "COMPUTER",
+                "hit" to false,
+                "created" to FieldValue.serverTimestamp()
+            )
+            Log.e("CPU SHIP:", randomPosition)
+            firestoreShips.document().set(newMessage)
+            i++
+        }
     }
 
     /** Called when going to a gameplay page */
@@ -120,7 +167,7 @@ class UserDashboard : AppCompatActivity() {
         active_game_ref_1.get()
             .addOnSuccessListener { document ->
                 for(doc in document){
-                    if (document != null && !gameIds.contains(doc.id)) {
+                    if (document != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                         gameIds.add(doc.id)
 
                         val docRef = firestoreUser.document(doc.data!!["user2"].toString())
@@ -128,7 +175,11 @@ class UserDashboard : AppCompatActivity() {
                             .addOnSuccessListener { document ->
                                 if (document != null) {
                                     val activeGameButton = Button(this)
-                                    activeGameButton.text = document.data!!["username"].toString()
+                                    if(document.data?.get("username") != null){
+                                        activeGameButton.text = document.data!!["username"].toString()
+                                    }else{
+                                        activeGameButton.text = "Computer"
+                                    }
                                     activeGameButton.tag = doc.id
                                     activeGameButton.setBackgroundColor(
                                         resources.getColor(R.color.active_button)
@@ -154,7 +205,7 @@ class UserDashboard : AppCompatActivity() {
                 active_game_ref_2.get()
                     .addOnSuccessListener { document ->
                         for(doc in document){
-                            if (document != null && !gameIds.contains(doc.id)) {
+                            if (document != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                                 gameIds.add(doc.id)
 
                                 val docRef = firestoreUser.document(doc.data!!["user1"].toString())
@@ -162,7 +213,11 @@ class UserDashboard : AppCompatActivity() {
                                     .addOnSuccessListener { document ->
                                         if (document != null) {
                                             val activeGameButton = Button(this)
-                                            activeGameButton.text = document.data!!["username"].toString()
+                                            if(document.data!!["username"] != null){
+                                                activeGameButton.text = document.data!!["username"].toString()
+                                            }else{
+                                                activeGameButton.text = "Computer"
+                                            }
                                             activeGameButton.tag = doc.id
                                             activeGameButton.setBackgroundColor(
                                                 resources.getColor(R.color.active_button)
