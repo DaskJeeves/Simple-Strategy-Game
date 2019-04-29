@@ -12,7 +12,8 @@
             android:layout_height="719dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/battleship_background_other_pages"
-            android:id="@+id/constraintLayout">
+            android:id="@+id/constraintLayout" app:layout_constraintBottom_toBottomOf="parent"
+    >
 
         <TextView
                 android:layout_width="0dp"
@@ -25,10 +26,12 @@
         />
         <ScrollView
                 android:layout_width="0dp"
-                android:layout_height="646dp"
+                android:layout_height="676dp"
                 app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/welcome_text" android:layout_marginTop="40dp"
-                app:layout_constraintHorizontal_bias="0.0">
+                app:layout_constraintTop_toTopOf="@+id/welcome_text"
+                app:layout_constraintHorizontal_bias="1.0" android:layout_marginTop="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.0">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:orientation="vertical">
                 <android.support.constraint.ConstraintLayout
@@ -100,13 +103,6 @@
                             app:layout_constraintHorizontal_bias="0.0"
                             android:onClick="goToChooseUser" android:background="@color/colorPrimary"
                             android:textColor="@color/white"/>
-                    <TextView
-                            android:text="@string/logout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/textView9"
-                            android:gravity="center"
-                            android:onClick="signOutUser"
-                            android:textSize="30sp" app:layout_constraintTop_toBottomOf="parent"/>
                     <LinearLayout
                             android:orientation="vertical"
                             android:layout_width="0dp"
@@ -116,16 +112,22 @@
                             app:layout_constraintTop_toBottomOf="@+id/button3"
                             android:id="@+id/active_games_linear_layout">
                         <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="35dp" android:id="@+id/textView11"
-                                android:text="@string/active_games"/>
-                        <TextView
                                 android:text="@string/active_games"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" android:id="@+id/textView10"
                                 android:textSize="30sp"
                                 android:fontFamily="@font/new_rocker"
                                 android:gravity="center"/>
+                    </LinearLayout>
+                    <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:id="@+id/logout_button"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0">
                     </LinearLayout>
                     <ImageButton
                             android:layout_width="wrap_content"
@@ -137,15 +139,6 @@
                             app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="8dp"
                             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
                             app:layout_constraintHorizontal_bias="0.934"/>
-                    <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="0dp"
-                            android:layout_height="49dp"
-                            android:id="@+id/logout_button"
-                            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginBottom="28dp" app:layout_constraintHorizontal_bias="0.0">
-                    </LinearLayout>
                 </android.support.constraint.ConstraintLayout>
             </LinearLayout>
         </ScrollView>
