@@ -107,7 +107,7 @@ class UserDashboard : AppCompatActivity() {
         active_games_ll.removeAllViews()
 
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        lp.setMargins(10, 10, 10, 0)
+        lp.setMargins(0, 10, 0, 0)
 
 
         val activeGameText = TextView(this)
