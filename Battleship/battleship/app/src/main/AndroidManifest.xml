@@ -14,11 +14,14 @@
                 android:label="@string/title_activity_victory_screen"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+                android:name=".lose_screen"
+                android:label="@string/title_activity_lose_screen"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".UserSearch">
         </activity>
         <activity android:name=".ChooseUser">
-        </activity>
-        <activity android:name=".TestChatActivity">
         </activity>
         <activity android:name=".CreateUserActivity">
         </activity>

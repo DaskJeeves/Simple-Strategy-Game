@@ -354,7 +354,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
         }
         Log.e("HITCOUNT", hitCount.toString())
-        if (hitCount >= 5) {
+        if (hitCount > 5) {
             firestoreGame.update("status", "inactive")
             val intent = Intent(this, victory_screen::class.java).apply {
             }
@@ -368,11 +368,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
         }
         Log.e("OPPONENTHITCOUNT", opponentHitCount.toString())
-        if (hitCount >= 5) {
+        if (hitCount > 5) {
             // LOSS SCREEN
-//            val intent = Intent(this, victory_screen::class.java).apply {
-//            }
-//            startActivity(intent)
+            firestoreGame.update("status", "inactive")
+            val intent = Intent(this, lose_screen::class.java)
+            startActivity(intent)
+            finish()
         }
 
     }
