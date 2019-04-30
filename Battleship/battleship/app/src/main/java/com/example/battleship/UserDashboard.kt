@@ -1,9 +1,12 @@
 package com.example.battleship
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.res.ResourcesCompat
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -155,7 +158,6 @@ class UserDashboard : AppCompatActivity() {
 
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         lp.setMargins(0, 10, 0, 0)
-
 
         val activeGameText = TextView(this)
         activeGameText.text = "ACTIVE GAMES"
