@@ -147,12 +147,16 @@ class UserDashboard : AppCompatActivity() {
 
     fun loadActiveGames(){
 
+        var active_one_done = false
+        var active_two_done = false
+        var one_cnt = 0
+        var two_cnt = 0
+
         auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
 
         // Get all the active games where the logged in user is user1 or user2
         val active_games_ll = findViewById<LinearLayout>(R.id.active_games_linear_layout)
-        val logout_button_ll = findViewById<LinearLayout>(R.id.logout_button)
 
         active_games_ll.removeAllViews()
 
@@ -167,9 +171,10 @@ class UserDashboard : AppCompatActivity() {
 
         val active_game_ref_1 = firestoreGame.whereEqualTo("user1", user!!.uid)
         active_game_ref_1.get()
-            .addOnSuccessListener { document ->
-                for(doc in document){
-                    if (document != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
+            .addOnSuccessListener { documents ->
+                for(doc in documents){
+                    one_cnt += 1
+                    if (documents != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                         gameIds.add(doc.id)
 
                         val docRef = firestoreUser.document(doc.data!!["user2"].toString())
@@ -196,6 +201,8 @@ class UserDashboard : AppCompatActivity() {
                                     }
                                     active_games_ll.addView(activeGameButton, lp)
                                 }
+                                Log.e("ONE CNT", one_cnt.toString())
+                                Log.e("DOCS SIZE", documents.size().toString())
                             }
                     }
                 }
@@ -238,25 +245,9 @@ class UserDashboard : AppCompatActivity() {
                             }
                         }
 
-                        // LOGOUT BUTTON
-                        val logoutButton = Button(this)
-                        logoutButton.text = "LOGOUT"
-                        logoutButton.setBackgroundColor(
-                            resources.getColor(R.color.logout_button)
-                        )
-                        logoutButton.setTextColor(
-                            resources.getColor(R.color.white)
-                        )
-                        logoutButton.setOnClickListener {
-                            auth = FirebaseAuth.getInstance()
-                            auth.signOut()
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
-                        logout_button_ll.addView(logoutButton, lp)
                     }
             }
+
     }
 
     private fun realtimeUpdateListener() {
