@@ -28,27 +28,6 @@ class victory_screen : AppCompatActivity() {
         setContentView(R.layout.activity_victory_screen)
 
 
-        // GET THE USER THAT WON AND DISPLAY IT!
-
-        /*var hitCount = 0
-        for(doc in opponentShipsSnapshot) {
-            val opponentShipid = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-            for(doc in userShipsSnapshot) {
-                val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
-                if (opponentShipid==id){
-                    hitCount++
-                }
-            }
-        }
-        if (hitCount >= 6)
-        {
-            val intent = Intent(this, victory_screen::class.java).apply {
-            }
-            startActivity(intent)
-        }
-        */
-
-
         //INCREMENT WIN COUNT
 
         auth = FirebaseAuth.getInstance()
@@ -75,27 +54,31 @@ class victory_screen : AppCompatActivity() {
         finish()
     }
 
-    fun createNewGame(view: View) {
-        val uid = auth.currentUser!!.uid
-        val newMessage = mapOf(
-            "user1" to uid,
-            "user2" to "",
-            "status" to "active",
-            "created" to FieldValue.serverTimestamp()
-        )
-
-        val newGame = firestoreGame.document()
-
-        newGame.set(newMessage)
-            .addOnSuccessListener {
-                Log.e("NEW GAME", "SUCCESS")
-            }
-            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-
-        val intent = Intent(this, Gameplay::class.java)
-        intent.putExtra("tag", newGame.id)
-        startActivity(intent)
-    }
-
+    /** Called when going to a gameplay page */
+//    fun createNewGame(view: View) {
+//        val uid = auth.currentUser!!.uid
+//        val newMessage = mapOf(
+//            "user1" to uid,
+//            "user2" to opponent_uid,
+//            "user1ShipsSet" to false,
+//            "user2ShipsSet" to false,
+//            "activeUser" to uid,
+//            "status" to "active",
+//            "created" to FieldValue.serverTimestamp()
+//        )
+//
+//        val newGame = firestoreGame.document()
+//
+//        newGame.set(newMessage)
+//            .addOnSuccessListener {
+//                Log.e("NEW GAME", "SUCCESS")
+//            }
+//            .addOnFailureListener { e -> Log.e("ERROR", e.message) }
+//
+//        val intent = Intent(this, Gameplay::class.java)
+//        intent.putExtra("tag", newGame.id)
+//        startActivity(intent)
+//        finish()
+//    }
 }
 

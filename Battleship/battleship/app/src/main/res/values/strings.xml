@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Battleship</string>
+    <string name="app_name">Watercraft Warfare</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="password">Password</string>
@@ -15,5 +15,5 @@
     <string name="active_games">ACTIVE GAMES</string>
     <string name="view_board">View Opponents Board</string>
     <string name="title_activity_victory_screen">Victory!</string>
-    <string name="title_activity_lose_screen">You Lost</string>
+    <string name="title_activity_lose_screen">Defeated!</string>
 </resources>

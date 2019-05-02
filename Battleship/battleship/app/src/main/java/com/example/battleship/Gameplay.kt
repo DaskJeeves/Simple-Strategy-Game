@@ -69,16 +69,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             findViewById<TextView>(R.id.game_tag).text = tag
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
-            Log.e("TAG", tag)
-
-
             firestoreGame.get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                        Log.e("DARA", document.data.toString())
-                        Log.e("USER", auth.currentUser!!.uid)
-                        Log.e("USER2", document.data!!["user2"].toString())
-                        Log.e("USER1", document.data!!["user1"].toString())
                         userUid = auth.currentUser!!.uid
                         user1 = document.getString("user1").toString()
                         activeUser = document.getString("activeUser").toString()
@@ -90,7 +83,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
                         loadSnapshots()
                         loadUserSnapshots()
-//                        realtimeUpdateListener()
                     }
                 }
         }
@@ -217,7 +209,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadUserMoves() {
-        userMoves = ArrayList<String>()
+        userMoves.clear()
         for (doc in userMovesSnapshot) {
             if (userMovesSnapshot != null) {
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
@@ -234,14 +226,11 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadOpponentShips() {
         opponentShips = ArrayList<String>()
-        Log.e("USER MOVES", userMoves.toString())
         for (doc in opponentShipsSnapshot) {
-            Log.e("OPPONENT SHIP", doc.data.toString())
             if (opponentShipsSnapshot != null) {
                 opponentShips.add(doc.data!!["position"].toString().toLowerCase())
                 val id = resources.getIdentifier(doc.data!!["position"].toString().toLowerCase(), "id", packageName)
                 val shipButton = findViewById<TextView>(id)
-                Log.e("POSITION", doc.data!!["position"].toString().toLowerCase())
                 if (userMoves.contains(doc.data!!["position"].toString().toLowerCase())) {
                     shipButton.setBackgroundResource(R.drawable.ship_destroyed)
                 }
@@ -250,6 +239,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadOpponentMoves() {
+        opponentMoves.clear()
         for (doc in opponentMovesSnapshot) {
             if (opponentMovesSnapshot != null) {
                 opponentMoves.add(doc.data!!["position"].toString().toLowerCase())
@@ -281,7 +271,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                     val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
                     userShips.get()
                         .addOnSuccessListener { document ->
-                            Log.e("SIZE:", document.size().toString())
                             when (document.size()) {
                                 in 0..4 ->
                                     firestoreShips.document().set(newMessage)
@@ -353,7 +342,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 hitCount++
             }
         }
-        Log.e("HITCOUNT", hitCount.toString())
         if (hitCount > 5) {
             firestoreGame.update("status", "inactive")
             val intent = Intent(this, victory_screen::class.java).apply {
@@ -364,11 +352,10 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         var opponentHitCount = 0
         for(move in opponentMoves){
             if(move in userShips){
-                hitCount++
+                opponentHitCount++
             }
         }
-        Log.e("OPPONENTHITCOUNT", opponentHitCount.toString())
-        if (hitCount > 5) {
+        if (opponentHitCount > 5) {
             // LOSS SCREEN
             firestoreGame.update("status", "inactive")
             val intent = Intent(this, lose_screen::class.java)
@@ -390,7 +377,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             "user" to "COMPUTER",
             "created" to FieldValue.serverTimestamp()
         )
-        Log.e("CPU MOVE:", randomPosition)
         opponentMoves.add(randomPosition)
         firestoreMoves.document().set(newMessage)
         checkForWin()

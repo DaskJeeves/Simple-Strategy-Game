@@ -1,12 +1,9 @@
 package com.example.battleship
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.res.ResourcesCompat
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -99,7 +96,6 @@ class UserDashboard : AppCompatActivity() {
 
         newGame.set(newMessage)
             .addOnSuccessListener {
-                Log.e("NEW GAME", "SUCCESS")
 
                 createRandomComputerShips(newGame)
 
@@ -127,7 +123,6 @@ class UserDashboard : AppCompatActivity() {
                 "hit" to false,
                 "created" to FieldValue.serverTimestamp()
             )
-            Log.e("CPU SHIP:", randomPosition)
             firestoreShips.document().set(newMessage)
             i++
         }
@@ -201,8 +196,6 @@ class UserDashboard : AppCompatActivity() {
                                     }
                                     active_games_ll.addView(activeGameButton, lp)
                                 }
-                                Log.e("ONE CNT", one_cnt.toString())
-                                Log.e("DOCS SIZE", documents.size().toString())
                             }
                     }
                 }
@@ -251,7 +244,6 @@ class UserDashboard : AppCompatActivity() {
     }
 
     private fun realtimeUpdateListener() {
-
         auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
 
@@ -264,14 +256,6 @@ class UserDashboard : AppCompatActivity() {
                     }
                 }
             }
-//            firestoreGame.whereEqualTo("user2", user.uid).addSnapshotListener { documentSnapshot, e ->
-//                when {
-//                    e != null -> Log.e("ERROR", e.message)
-//                    documentSnapshot != null -> {
-//                        loadActiveGames()
-//                    }
-//                }
-//            }
         }
     }
 
