@@ -88,7 +88,7 @@ class UserDashboard : AppCompatActivity() {
             "status" to "active",
             "created" to FieldValue.serverTimestamp(),
             "user1ShipsSet" to false,
-            "user2ShipsSet" to false,
+            "user2ShipsSet" to true,
             "activeUser" to uid
         )
 
@@ -104,7 +104,6 @@ class UserDashboard : AppCompatActivity() {
                 startActivity(intent)
             }
             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
-
     }
 
     fun createRandomComputerShips(gameRef: DocumentReference){
@@ -132,7 +131,7 @@ class UserDashboard : AppCompatActivity() {
     fun goToGame(view: View) {
         val intent = Intent(this, Gameplay::class.java)
         startActivity(intent)
-    }
+        }
 
     /** Called when going to a gameplay page */
     fun goToChooseUser(view: View) {

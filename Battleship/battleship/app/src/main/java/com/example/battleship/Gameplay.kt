@@ -259,77 +259,91 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
         when (currentBoardView) {
             "user" ->
-
-                if (!userShipsSet) {
-                    val newMessage = mapOf(
-                        "position" to v.getTag().toString(),
-                        "user" to auth.currentUser!!.uid,
-                        "hit" to false,
-                        "created" to FieldValue.serverTimestamp()
-                    )
-                    val firestoreShips = firestoreGame.collection("Ships")
-                    val userShips = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
-                    userShips.get()
-                        .addOnSuccessListener { document ->
-                            when (document.size()) {
-                                in 0..4 ->
-                                    firestoreShips.document().set(newMessage)
-                                        .addOnSuccessListener {
-                                            v.setBackgroundResource(R.drawable.ship)
-                                        }
-                                5 ->
-                                    firestoreShips.document().set(newMessage)
-                                        .addOnSuccessListener {
-                                            v.setBackgroundResource(R.drawable.ship)
-                                            userShipsSet = true
-                                            var setUserShips: Map<String, Any>
-                                            if (user1 == userUid) {
-                                                setUserShips = mapOf(
-                                                    "user1ShipsSet" to true
-                                                )
-                                            } else {
-                                                setUserShips = mapOf(
-                                                    "user2ShipsSet" to true
-                                                )
+                if (userShipsSet) { Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show() }
+                else {
+                    var position = v.getTag().toString()
+                    if (position in userShips) { Toast.makeText(this, "You already have a ship there!", Toast.LENGTH_LONG).show() }
+                    else {
+                        val newMessage = mapOf(
+                            "position" to position,
+                            "user" to auth.currentUser!!.uid,
+                            "hit" to false,
+                            "created" to FieldValue.serverTimestamp()
+                        )
+                        val firestoreShips = firestoreGame.collection("Ships")
+                        val userPlacements = firestoreShips.whereEqualTo("user", auth.currentUser!!.uid)
+                        userPlacements.get()
+                            .addOnSuccessListener { document ->
+                                when (document.size()) {
+                                    in 0..4 -> {
+                                        userShips.add(position)
+                                        firestoreShips.document().set(newMessage)
+                                            .addOnSuccessListener {
+                                                v.setBackgroundResource(R.drawable.ship)
                                             }
-                                            firestoreGame.set(setUserShips, SetOptions.merge())
-                                        }
-                                else -> {
-                                    userShipsSet = true
-                                    Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
+                                    }
+                                    5 -> {
+                                        userShips.add(position)
+                                        firestoreShips.document().set(newMessage)
+                                            .addOnSuccessListener {
+                                                v.setBackgroundResource(R.drawable.ship)
+                                                userShipsSet = true
+                                                var setUserShips: Map<String, Any>
+                                                if (user1 == userUid) {
+                                                    setUserShips = mapOf(
+                                                        "user1ShipsSet" to true
+                                                    )
+                                                } else {
+                                                    setUserShips = mapOf(
+                                                        "user2ShipsSet" to true
+                                                    )
+                                                }
+                                                firestoreGame.set(setUserShips, SetOptions.merge())
+                                            }
+                                    }
+                                    else -> {
+                                        userShipsSet = true
+                                        Toast.makeText(this, "All your ships are set", Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
-                        }
-
+                    }
                 }
-            else ->
-                if (activeUser == userUid && userShipsSet) {
-                    val newMessage = mapOf(
-                        "position" to v.getTag().toString(),
-                        "user" to auth.currentUser!!.uid,
-                        "created" to FieldValue.serverTimestamp()
-                    )
-                    userMoves.add(v.getTag().toString())
-                    val firestoreMoves = firestoreGame.collection("Moves")
-                    firestoreMoves.document().set(newMessage)
-                        .addOnSuccessListener {
-                            if(opponentUid == "COMPUTER"){
-                                setComputerMove()
-                            }else{
-                                activeUser = opponentUid
-                                val setActiveUser = mapOf(
-                                    "activeUser" to opponentUid
-                                )
-                                firestoreGame.set(setActiveUser, SetOptions.merge())
-                                activePlayer = 0
-                            }
-                            if (opponentShips.contains(v.getTag().toString())) {
-                                v.setBackgroundResource(R.drawable.ship_destroyed)
-                                checkForWin()
-                            } else {
-                                v.setBackgroundResource(R.drawable.miss)
-                            }
-                        }.addOnFailureListener { e -> Log.e("ERROR", e.message)}
+            "opponent" ->
+                if (!userShipsSet) {Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show()}
+                else if (!opponentShipsSet && opponentUid != "COMPUTER") {Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show()}
+                else if (activeUser != auth.currentUser!!.uid) {Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show()}
+                else {
+                    var position = v.getTag().toString()
+                    if (position in userMoves) {Toast.makeText(this, "You already made a move there!", Toast.LENGTH_LONG).show()}
+                    else {
+                        val newMessage = mapOf(
+                            "position" to position,
+                            "user" to auth.currentUser!!.uid,
+                            "created" to FieldValue.serverTimestamp()
+                        )
+                        userMoves.add(position)
+                        val firestoreMoves = firestoreGame.collection("Moves")
+                        firestoreMoves.document().set(newMessage)
+                            .addOnSuccessListener {
+                                if (opponentUid == "COMPUTER") {
+                                    setComputerMove()
+                                } else {
+                                    activeUser = opponentUid
+                                    val setActiveUser = mapOf(
+                                        "activeUser" to opponentUid
+                                    )
+                                    firestoreGame.set(setActiveUser, SetOptions.merge())
+                                    activePlayer = 0
+                                }
+                                if (opponentShips.contains(v.getTag().toString())) {
+                                    v.setBackgroundResource(R.drawable.ship_destroyed)
+                                    checkForWin()
+                                } else {
+                                    v.setBackgroundResource(R.drawable.miss)
+                                }
+                            }.addOnFailureListener { e -> Log.e("ERROR", e.message) }
+                    }
                 }
         }
 
