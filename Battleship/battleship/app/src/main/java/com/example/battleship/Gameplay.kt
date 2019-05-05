@@ -329,6 +329,12 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         val firestoreMoves = firestoreGame.collection("Moves")
                         firestoreMoves.document().set(newMessage)
                             .addOnSuccessListener {
+                                if (opponentShips.contains(v.getTag().toString())) {
+                                    v.setBackgroundResource(R.drawable.ship_destroyed)
+                                    checkForWin()
+                                } else {
+                                    v.setBackgroundResource(R.drawable.miss)
+                                }
                                 if (opponentUid == "COMPUTER") {
                                     setComputerMove()
                                 } else {
@@ -339,12 +345,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                                     firestoreGame.set(setActiveUser, SetOptions.merge())
                                     activePlayer = 0
                                 }
-                                if (opponentShips.contains(v.getTag().toString())) {
-                                    v.setBackgroundResource(R.drawable.ship_destroyed)
-                                    checkForWin()
-                                } else {
-                                    v.setBackgroundResource(R.drawable.miss)
-                                }
+
                             }.addOnFailureListener { e -> Log.e("ERROR", e.message) }
                     }
                 }
