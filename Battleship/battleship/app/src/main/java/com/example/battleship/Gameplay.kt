@@ -226,6 +226,9 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     fun loadOpponentShips() {
         opponentShips = ArrayList<String>()
+        if (opponentShipsSnapshot.size() > 5) {
+            opponentShipsSet = true
+        }
         for (doc in opponentShipsSnapshot) {
             if (opponentShipsSnapshot != null) {
                 opponentShips.add(doc.data!!["position"].toString().toLowerCase())
@@ -311,7 +314,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 }
             "opponent" ->
                 if (!userShipsSet) {Toast.makeText(this, "Set your ships before making your move!", Toast.LENGTH_LONG).show()}
-                else if (!opponentShipsSet && opponentUid != "COMPUTER") {Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show()}
+                else if (!opponentShipsSet) {Toast.makeText(this, "Opponent hasn't set their ships!", Toast.LENGTH_LONG).show()}
                 else if (activeUser != auth.currentUser!!.uid) {Toast.makeText(this, "It's not your turn!", Toast.LENGTH_LONG).show()}
                 else {
                     var position = v.getTag().toString()
@@ -358,8 +361,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         }
         if (hitCount > 5) {
             firestoreGame.update("status", "inactive")
-            val intent = Intent(this, victory_screen::class.java).apply {
-            }
+            val intent = Intent(this, victory_screen::class.java)
+            intent.putExtra("opponent", opponentUid)
             startActivity(intent)
             finish()
         }
@@ -373,6 +376,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             // LOSS SCREEN
             firestoreGame.update("status", "inactive")
             val intent = Intent(this, lose_screen::class.java)
+            intent.putExtra("opponent", opponentUid)
             startActivity(intent)
             finish()
         }
