@@ -99,7 +99,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
         }
 
-//      realtimeUpdateListener()
+      realtimeUpdateListener()
     }
 
     fun clearButtons() {
@@ -417,6 +417,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 } else {
                     opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
                 }
+                if (currentBoardView == "user") loadUserSnapshots()
             }
         }
     }
