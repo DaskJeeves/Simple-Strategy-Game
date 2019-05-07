@@ -109,16 +109,17 @@ class CreateUserActivity : AppCompatActivity() {
                         finish()
                     }
                 } else {
-                    // If create user fails, display a message to the user.
-                    Log.e("createUserWithEmail", ":failure", task.exception)
-                    Log.e("EXCEPTION", task.exception!!.message.toString())
-                    if(task.exception.toString().contains("FirebaseAuthWeakPasswordException")){
-                        Log.e("SHOW", "WEAK PASSWORD MESSAGE")
-                    }
+                    // If sign in fails, display a message to the user.
+                    Log.w("createUserWithEmail", ":failure", task.exception)
+                    var failtext = task.exception!!.message
+
+                    //if (!passwordCheck(password)) {failtext = "Password too short"}
+                    //if (validemail(email)) failtext = "Invalid email"
                     Toast.makeText(
-                        baseContext, task.exception!!.message,
-                        Toast.LENGTH_LONG
+                        baseContext, failtext,
+                        Toast.LENGTH_SHORT
                     ).show()
+
                     // updateUI(null)
                 }
             }

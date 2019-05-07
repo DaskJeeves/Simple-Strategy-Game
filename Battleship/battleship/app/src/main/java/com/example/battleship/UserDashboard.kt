@@ -136,11 +136,16 @@ class UserDashboard : AppCompatActivity() {
     fun goToGame(view: View) {
         val intent = Intent(this, Gameplay::class.java)
         startActivityForResult(intent, 1)
-        }
+    }
 
     /** Called when going to a gameplay page */
     fun goToChooseUser(view: View) {
         val intent = Intent(this, ChooseUser::class.java)
+        startActivity(intent)
+    }
+
+    fun goToStats(view: View) {
+        val intent = Intent(this, UserStats::class.java)
         startActivity(intent)
     }
 
