@@ -10,7 +10,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name=".SplashActivity"
-                  android:theme="@style/SplashTheme">
+                  android:theme="@style/SplashTheme"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,22 +22,34 @@
         <activity
                 android:name=".victory_screen"
                 android:label="@string/title_activity_victory_screen"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".lose_screen"
                 android:label="@string/title_activity_lose_screen"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UserSearch">
+        <activity android:name=".UserSearch"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ChooseUser">
+        <activity android:name=".ChooseUser"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".CreateUserActivity">
+        <activity android:name=".CreateUserActivity"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".Gameplay"
-                android:parentActivityName=".UserDashboard">
+                android:parentActivityName=".UserDashboard"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
@@ -44,14 +58,18 @@
         </activity>
         <activity
                 android:name=".UserDashboard"
-                android:parentActivityName=".MainActivity">
+                android:parentActivityName=".MainActivity"
+                android:configChanges="orientation"
+                android:screenOrientation="portrait">
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.example.battleship.MainActivity"/>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+                  android:configChanges="orientation"
+                  android:screenOrientation="portrait">
         </activity>
 
         <meta-data

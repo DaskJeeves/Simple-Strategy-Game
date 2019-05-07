@@ -120,7 +120,7 @@ class UserSearch : AppCompatActivity() {
 
         val intent = Intent(this, Gameplay::class.java)
         intent.putExtra("tag", newGame.id)
-        startActivity(intent)
+        startActivityForResult(intent, 1)
         finish()
     }
 }

@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
         if(uname != "" && pword != ""){
             signInEmail(uname, pword, true)
         }else{
-            Log.e("4", "4")
             Toast.makeText(baseContext, "Please enter username and password.",
                 Toast.LENGTH_LONG).show()
         }
@@ -76,14 +75,15 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, UserDashboard::class.java)
                     startActivity(intent)
                 }else{
-                    Toast.makeText(
-                        baseContext, task.exception!!.message,
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
             }.addOnFailureListener {
                 if(tryUsername){
                     signInUsername(email, password)
+                }else{
+                    Toast.makeText(
+                        baseContext, it.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }

@@ -9,7 +9,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Thread.sleep(1800)
+        Thread.sleep(1100)
 
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

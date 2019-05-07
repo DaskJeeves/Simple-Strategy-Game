@@ -76,6 +76,8 @@ class UserDashboard : AppCompatActivity() {
         findViewById<ImageButton>(R.id.sync_active_games).setOnClickListener{
             loadActiveGames()
         }
+
+        loadActiveGames()
     }
 
 
@@ -91,17 +93,20 @@ class UserDashboard : AppCompatActivity() {
             "user2ShipsSet" to true,
             "activeUser" to uid
         )
+        Log.e("CREATE", "SINGLE PLAYER")
 
         val newGame = firestoreGame.document()
 
         newGame.set(newMessage)
             .addOnSuccessListener {
 
+                Log.e("CREATE", "SINGLE PLAYER 2")
+
                 createRandomComputerShips(newGame)
 
                 val intent = Intent(this, Gameplay::class.java)
                 intent.putExtra("tag", newGame.id)
-                startActivity(intent)
+                startActivityForResult(intent, 1)
             }
             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
     }
@@ -130,7 +135,7 @@ class UserDashboard : AppCompatActivity() {
     /** Called when going to a gameplay page */
     fun goToGame(view: View) {
         val intent = Intent(this, Gameplay::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, 1)
         }
 
     /** Called when going to a gameplay page */
@@ -140,33 +145,34 @@ class UserDashboard : AppCompatActivity() {
     }
 
     fun loadActiveGames(){
-
-        var active_one_done = false
-        var active_two_done = false
         var one_cnt = 0
         var two_cnt = 0
 
-        auth = FirebaseAuth.getInstance()
+        Log.e("LOAD", "ACTIVE GAMES")
+
         val user = auth.currentUser
 
         // Get all the active games where the logged in user is user1 or user2
         val active_games_ll = findViewById<LinearLayout>(R.id.active_games_linear_layout)
 
         active_games_ll.removeAllViews()
+        gameIds = ArrayList<String>()
+
 
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         lp.setMargins(0, 10, 0, 0)
 
-        val activeGameText = TextView(this)
-        activeGameText.text = "ACTIVE GAMES"
-        activeGameText.gravity = Gravity.CENTER
-        activeGameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24.0F);
-        active_games_ll.addView(activeGameText, lp)
+//        val activeGameText = TextView(this)
+//        activeGameText.text = "ACTIVE GAMES"
+//        activeGameText.gravity = Gravity.CENTER
+//        activeGameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24.0F);
+//        active_games_ll.addView(activeGameText, lp)
 
         val active_game_ref_1 = firestoreGame.whereEqualTo("user1", user!!.uid)
         active_game_ref_1.get()
             .addOnSuccessListener { documents ->
                 for(doc in documents){
+
                     one_cnt += 1
                     if (documents != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                         gameIds.add(doc.id)
@@ -191,7 +197,7 @@ class UserDashboard : AppCompatActivity() {
                                     activeGameButton.setOnClickListener {
                                         val intent = Intent(this, Gameplay::class.java)
                                         intent.putExtra("tag", it.tag.toString())
-                                        startActivity(intent)
+                                        startActivityForResult(intent, 1)
                                     }
                                     active_games_ll.addView(activeGameButton, lp)
                                 }
@@ -229,7 +235,7 @@ class UserDashboard : AppCompatActivity() {
                                             activeGameButton.setOnClickListener {
                                                 val intent = Intent(this, Gameplay::class.java)
                                                 intent.putExtra("tag", it.tag.toString())
-                                                startActivity(intent)
+                                                startActivityForResult(intent, 1)
                                             }
                                             active_games_ll.addView(activeGameButton, lp)
                                         }
@@ -247,7 +253,7 @@ class UserDashboard : AppCompatActivity() {
         val user = auth.currentUser
 
         if (user != null) {
-            firestoreGame.whereEqualTo("user1", user.uid).addSnapshotListener { documentSnapshot, e ->
+            firestoreGame.whereEqualTo("user2", user.uid).addSnapshotListener { documentSnapshot, e ->
                 when {
                     e != null -> Log.e("ERROR", e.message)
                     documentSnapshot != null -> {
@@ -258,11 +264,6 @@ class UserDashboard : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        loadActiveGames()
-    }
-
     /** Called when the user taps the Send button */
     fun signOutUser(view: View) {
         auth = FirebaseAuth.getInstance()
@@ -270,5 +271,15 @@ class UserDashboard : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        loadActiveGames()
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onBackPressed() {
+        loadActiveGames()
+        super.onBackPressed()
     }
 }

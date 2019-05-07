@@ -5,6 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_blue"
         tools:context=".victory_screen" android:id="@+id/coordinatorLayout">
 
     <android.support.design.widget.AppBarLayout
@@ -20,7 +21,7 @@
 
     <ImageView
             android:layout_width="0dp"
-            android:layout_height="728dp" app:srcCompat="@drawable/victory_image" android:id="@+id/imageView3"
+            android:layout_height="555dp" app:srcCompat="@drawable/victory_image" android:id="@+id/imageView3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintTop_toTopOf="parent" android:background="@color/background_blue"/>
@@ -28,10 +29,10 @@
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:id="@+id/button5" android:onClick="createNewGame"
-            android:layout_marginTop="552dp" app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="476dp" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.469" android:background="@color/colorPrimary"
-            android:textColor="@color/white"/>
+            app:layout_constraintHorizontal_bias="0.535" android:background="@color/colorPrimary"
+            android:textColor="@color/white" android:text="Play Again"/>
     <Button
             android:text="RETURN TO MAIN MENU"
             android:layout_width="227dp"
@@ -49,8 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:id="@+id/textView4" android:layout_marginTop="56dp" app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/textView4" android:layout_marginTop="16dp" app:layout_constraintTop_toTopOf="parent"
             android:textSize="60sp"
-            android:fontFamily="@font/new_rocker"/>
+            android:fontFamily="@font/new_rocker" android:textColor="@color/white"
+            app:layout_constraintHorizontal_bias="0.497"/>
 
 </android.support.constraint.ConstraintLayout>

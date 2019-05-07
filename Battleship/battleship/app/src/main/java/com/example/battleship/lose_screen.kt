@@ -144,6 +144,7 @@ class lose_screen : AppCompatActivity() {
                 val intent = Intent(this, Gameplay::class.java)
                 intent.putExtra("tag", newGame.id)
                 startActivity(intent)
+                finish()
             }
             .addOnFailureListener { e -> Log.e("ERROR", e.message) }
     }

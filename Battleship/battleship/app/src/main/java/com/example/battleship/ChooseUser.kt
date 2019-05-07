@@ -45,7 +45,7 @@ class ChooseUser : AppCompatActivity() {
         firestoreUser.get()
             .addOnSuccessListener { document ->
                 for (doc in document) {
-                    if (document != null) {
+                    if (document != null && doc.id != auth.uid) {
                         val activeUserButton = Button(this)
                         activeUserButton.text = doc.data["username"].toString()
                         activeUserButton.tag = doc.id
@@ -88,7 +88,7 @@ class ChooseUser : AppCompatActivity() {
 
         val intent = Intent(this, Gameplay::class.java)
         intent.putExtra("tag", newGame.id)
-        startActivity(intent)
+        startActivityForResult(intent, 1)
         finish()
     }
 

@@ -1,5 +1,6 @@
 package com.example.battleship
 
+import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     lateinit var auth: FirebaseAuth
 
     lateinit var firestoreGame: DocumentReference
+    lateinit var firestoreUser: DocumentReference
 
     val shipColor = R.color.colorAccent
     val hitColor = R.color.hit_color
@@ -66,7 +68,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
         val tag = intent.getStringExtra("tag")
         if (tag != null) {
-            findViewById<TextView>(R.id.game_tag).text = tag
+//            findViewById<TextView>(R.id.game_tag).text = tag
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
             firestoreGame.get()
@@ -191,6 +193,18 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             .addOnSuccessListener { document ->
                 opponentMovesSnapshot = document
             }
+
+
+        if(opponentUid == "COMPUTER"){
+            game_tag.text = """Game with Computer"""
+        }else{
+            firestoreUser = FirebaseFirestore.getInstance().collection("Users").document(opponentUid)
+            firestoreUser.get()
+                .addOnSuccessListener { document ->
+                    val opponentUsername = document.getString("username").toString()
+                    game_tag.text = """Game with ${opponentUsername}"""
+                }
+        }
     }
 
     fun loadUserShips() {
@@ -420,6 +434,11 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 if (currentBoardView == "user") loadUserSnapshots()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        setResult(Activity.RESULT_OK)
+        super.onBackPressed()
     }
 
 }
