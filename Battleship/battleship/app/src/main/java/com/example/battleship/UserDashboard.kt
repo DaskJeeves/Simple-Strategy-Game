@@ -93,14 +93,11 @@ class UserDashboard : AppCompatActivity() {
             "user2ShipsSet" to true,
             "activeUser" to uid
         )
-        Log.e("CREATE", "SINGLE PLAYER")
 
         val newGame = firestoreGame.document()
 
         newGame.set(newMessage)
             .addOnSuccessListener {
-
-                Log.e("CREATE", "SINGLE PLAYER 2")
 
                 createRandomComputerShips(newGame)
 
@@ -156,17 +153,10 @@ class UserDashboard : AppCompatActivity() {
         val active_games_ll = findViewById<LinearLayout>(R.id.active_games_linear_layout)
 
         active_games_ll.removeAllViews()
-        gameIds = ArrayList<String>()
 
 
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         lp.setMargins(0, 10, 0, 0)
-
-//        val activeGameText = TextView(this)
-//        activeGameText.text = "ACTIVE GAMES"
-//        activeGameText.gravity = Gravity.CENTER
-//        activeGameText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24.0F);
-//        active_games_ll.addView(activeGameText, lp)
 
         val active_game_ref_1 = firestoreGame.whereEqualTo("user1", user!!.uid)
         active_game_ref_1.get()
@@ -176,6 +166,7 @@ class UserDashboard : AppCompatActivity() {
                     one_cnt += 1
                     if (documents != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                         gameIds.add(doc.id)
+                        Log.e("GAME IDS", gameIds.toString())
 
                         val docRef = firestoreUser.document(doc.data!!["user2"].toString())
                         docRef.get()
@@ -214,6 +205,7 @@ class UserDashboard : AppCompatActivity() {
                         for(doc in document){
                             if (document != null && !gameIds.contains(doc.id) && doc.data!!["status"] == "active") {
                                 gameIds.add(doc.id)
+                                Log.e("GAME IDS", gameIds.toString())
 
                                 val docRef = firestoreUser.document(doc.data!!["user1"].toString())
                                 docRef.get()

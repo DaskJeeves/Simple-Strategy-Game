@@ -1,6 +1,5 @@
 package com.example.battleship
 
-import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -68,7 +67,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
         val tag = intent.getStringExtra("tag")
         if (tag != null) {
-//            findViewById<TextView>(R.id.game_tag).text = tag
+            findViewById<TextView>(R.id.game_tag).text = tag
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
             firestoreGame.get()
@@ -82,9 +81,21 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         } else {
                             document.getString("user2").toString()
                         }
-
                         loadSnapshots()
                         loadUserSnapshots()
+
+                        if(opponentUid == "COMPUTER"){
+                            game_tag.text = """Game with Computer"""
+                        }else{
+                            firestoreUser = FirebaseFirestore.getInstance().collection("Users").document(opponentUid)
+                            firestoreUser.get()
+                                .addOnSuccessListener { document ->
+                                    val opponentUsername = document.getString("username").toString()
+                                    game_tag.text = """Game with ${opponentUsername}"""
+                                }
+                        }
+
+                        realtimeUpdateListener()
                     }
                 }
         }
@@ -101,7 +112,8 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
             }
         }
 
-      realtimeUpdateListener()
+        Log.e("OPPONENT UID", opponentUid)
+
     }
 
     fun clearButtons() {
@@ -195,18 +207,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                             }
                     }
             }
-
-
-        if(opponentUid == "COMPUTER"){
-            game_tag.text = """Game with Computer"""
-        }else{
-            firestoreUser = FirebaseFirestore.getInstance().collection("Users").document(opponentUid)
-            firestoreUser.get()
-                .addOnSuccessListener { document ->
-                    val opponentUsername = document.getString("username").toString()
-                    game_tag.text = """Game with ${opponentUsername}"""
-                }
-        }
     }
 
     fun loadUserShips() {
@@ -370,31 +370,31 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadAll() {
-            userShips.clear()
-            for (doc in userShipsSnapshot) {
-                if (userShipsSnapshot != null) {
-                    userShips.add(doc.data!!["position"].toString().toLowerCase())
-                }
+        userShips.clear()
+        for (doc in userShipsSnapshot) {
+            if (userShipsSnapshot != null) {
+                userShips.add(doc.data!!["position"].toString().toLowerCase())
             }
-            userMoves.clear()
-            for (doc in userMovesSnapshot) {
-                if (userMovesSnapshot != null) {
-                    userMoves.add(doc.data!!["position"].toString().toLowerCase())
-                }
+        }
+        userMoves.clear()
+        for (doc in userMovesSnapshot) {
+            if (userMovesSnapshot != null) {
+                userMoves.add(doc.data!!["position"].toString().toLowerCase())
             }
-            opponentShips.clear()
-            for (doc in opponentShipsSnapshot) {
-                if (opponentShipsSnapshot != null) {
-                    opponentShips.add(doc.data!!["position"].toString().toLowerCase())
-                }
+        }
+        opponentShips.clear()
+        for (doc in opponentShipsSnapshot) {
+            if (opponentShipsSnapshot != null) {
+                opponentShips.add(doc.data!!["position"].toString().toLowerCase())
             }
-            opponentMoves.clear()
-            for (doc in opponentMovesSnapshot) {
-                if (opponentMovesSnapshot != null) {
-                    opponentMoves.add(doc.data!!["position"].toString().toLowerCase())
+        }
+        opponentMoves.clear()
+        for (doc in opponentMovesSnapshot) {
+            if (opponentMovesSnapshot != null) {
+                opponentMoves.add(doc.data!!["position"].toString().toLowerCase())
 
-                }
             }
+        }
 
     }
 
@@ -465,11 +465,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                 loadSnapshots()
             }
         }
-    }
-
-    override fun onBackPressed() {
-        setResult(Activity.RESULT_OK)
-        super.onBackPressed()
     }
 
 }
