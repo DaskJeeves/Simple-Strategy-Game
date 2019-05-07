@@ -64,10 +64,18 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         //Initialize Auth Instance
         auth = FirebaseAuth.getInstance()
 
+        //display yout name
+        val uid = auth.currentUser!!.uid
+        firestoreUser = FirebaseFirestore.getInstance().collection("Users").document(uid)
+        firestoreUser.get()
+            .addOnSuccessListener { document ->
+                val Username = document.getString("username").toString()
+                user1Name.text = """${Username}"""
+            }
 
         val tag = intent.getStringExtra("tag")
         if (tag != null) {
-            findViewById<TextView>(R.id.game_tag).text = tag
+            findViewById<TextView>(R.id.user2Name).text = tag
             firestoreGame = FirebaseFirestore.getInstance().collection("Games").document(tag)
 
             firestoreGame.get()
@@ -85,13 +93,13 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                         loadUserSnapshots()
 
                         if(opponentUid == "COMPUTER"){
-                            game_tag.text = """Game with Computer"""
+                            user2Name.text = """Computer"""
                         }else{
                             firestoreUser = FirebaseFirestore.getInstance().collection("Users").document(opponentUid)
                             firestoreUser.get()
                                 .addOnSuccessListener { document ->
                                     val opponentUsername = document.getString("username").toString()
-                                    game_tag.text = """Game with ${opponentUsername}"""
+                                    user2Name.text = """Game with ${opponentUsername}"""
                                 }
                         }
 
@@ -398,7 +406,30 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    fun updateHits(){
+        var hitCount = 0
+        for(move in userMoves){
+            if(move in opponentShips){
+                hitCount++
+            }
+        }
+        var opponentHitCount = 0
+        for(move in opponentMoves){
+            if(move in userShips){
+                opponentHitCount++
+            }
+        }
+
+        user1Ships.text = hitCount.toString() + "/6"
+        user2Ships.text = opponentHitCount.toString() + "/6"
+
+    }
+
+
     fun checkForWin(){
+
+        updateHits()
+
         var hitCount = 0
         for(move in userMoves){
             if(move in opponentShips){
@@ -468,5 +499,4 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     }
 
 }
-
 
