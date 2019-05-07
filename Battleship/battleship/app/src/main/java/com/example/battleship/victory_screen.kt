@@ -24,6 +24,7 @@ class victory_screen : AppCompatActivity() {
         FirebaseFirestore.getInstance().collection("Games")
     }
     var opponent_uid = ""
+    var opponent = ""
 
     val allButtons = listOf(
         "a0", "a1", "a2", "a3", "a4", "a5",
@@ -38,7 +39,20 @@ class victory_screen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_victory_screen)
         opponent_uid  = intent.getStringExtra("opponent")
-        button5.text = "Play " + opponent_uid + " again"
+        if (opponent_uid == "COMPUTER") {
+            opponent = "COMPUTER"
+        }
+        else {
+            val docRef = firestoreUser.document(opponent_uid)
+            docRef.get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        opponent = document.data!!["username"].toString()
+                    }
+                }
+
+        }
+        button5.text = "Play " + opponent + " again"
 
         //INCREMENT WIN COUNT
 

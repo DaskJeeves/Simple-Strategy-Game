@@ -169,27 +169,29 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
         userShips.get()
             .addOnSuccessListener { document ->
                 userShipsSnapshot = document
-            }
 
-        //USER MOVES
-        val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
-        userMoves.get()
-            .addOnSuccessListener { document ->
-                userMovesSnapshot = document
-            }
+                //USER MOVES
+                val userMoves = firestoreMoves.whereEqualTo("user", auth.currentUser!!.uid)
+                userMoves.get()
+                    .addOnSuccessListener { document ->
+                        userMovesSnapshot = document
 
-        //OPPONENT SHIPS
-        val opponentShips = firestoreShips.whereEqualTo("user", opponentUid)
-        opponentShips.get()
-            .addOnSuccessListener { document ->
-                opponentShipsSnapshot = document
-            }
+                        //OPPONENT SHIPS
+                        val opponentShips = firestoreShips.whereEqualTo("user", opponentUid)
+                        opponentShips.get()
+                            .addOnSuccessListener { document ->
+                                opponentShipsSnapshot = document
 
-        //OPPONENT MOVES
-        val opponentMoves = firestoreMoves.whereEqualTo("user", opponentUid)
-        opponentMoves.get()
-            .addOnSuccessListener { document ->
-                opponentMovesSnapshot = document
+                                //OPPONENT MOVES
+                                val opponentMoves = firestoreMoves.whereEqualTo("user", opponentUid)
+                                opponentMoves.get()
+                                    .addOnSuccessListener { document ->
+                                        opponentMovesSnapshot = document
+                                        loadAll()
+                                        checkForWin()
+                                    }
+                            }
+                    }
             }
     }
 
@@ -353,6 +355,35 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    fun loadAll() {
+            userShips.clear()
+            for (doc in userShipsSnapshot) {
+                if (userShipsSnapshot != null) {
+                    userShips.add(doc.data!!["position"].toString().toLowerCase())
+                }
+            }
+            userMoves.clear()
+            for (doc in userMovesSnapshot) {
+                if (userMovesSnapshot != null) {
+                    userMoves.add(doc.data!!["position"].toString().toLowerCase())
+                }
+            }
+            opponentShips.clear()
+            for (doc in opponentShipsSnapshot) {
+                if (opponentShipsSnapshot != null) {
+                    opponentShips.add(doc.data!!["position"].toString().toLowerCase())
+                }
+            }
+            opponentMoves.clear()
+            for (doc in opponentMovesSnapshot) {
+                if (opponentMovesSnapshot != null) {
+                    opponentMoves.add(doc.data!!["position"].toString().toLowerCase())
+
+                }
+            }
+
+    }
+
     fun checkForWin(){
         var hitCount = 0
         for(move in userMoves){
@@ -405,7 +436,6 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
     fun realtimeUpdateListener() {
 
         firestoreGame.addSnapshotListener { document, e ->
-
             if (e != null) {
                 Log.e("ERROR", e.message)
             }
@@ -418,6 +448,7 @@ class Gameplay : AppCompatActivity(), View.OnClickListener {
                     opponentShipsSet = (document.getBoolean("user1ShipsSet")!!)
                 }
                 if (currentBoardView == "user") loadUserSnapshots()
+                loadSnapshots()
             }
         }
     }
